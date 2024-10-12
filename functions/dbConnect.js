@@ -4,7 +4,7 @@ const dbConnect = async () => {
   try {
     await sequelize.authenticate();
     sequelize.sync()
-      .then(() => console.log('Tables created successfully'))
+      .then(() => console.log('Tables created/updated successfully'))
       .catch((error) => console.error('Error creating tables:', error));
   } catch (e) {
     console.log("Подключение к бд сломалось", e);
