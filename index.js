@@ -20,7 +20,12 @@ app.use(express.json());
 app.use(cors());
 app.listen(port, () => console.log(`App is listening on port ${port}.`));
 
+app.get("/api", async (req, res) => {
+  return res.json("work");
+});
 
+const carsRouter = require("./api/cars");
+app.use("/api", carsRouter);
 
 const start = async () => {
 
