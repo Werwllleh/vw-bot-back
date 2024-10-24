@@ -14,9 +14,11 @@ const port = process.env.PORT;
 process.env["NTBA_FIX_350"] = 1;
 
 const app = express();
+const fileUpload = require("express-fileupload");
 const bot = new TelegramBot(token, {polling: true});
 
 app.use(express.json());
+app.use(fileUpload());
 app.use(cors());
 app.listen(port, () => console.log(`App is listening on port ${port}.`));
 
@@ -26,6 +28,7 @@ app.get("/api", async (req, res) => {
 
 const carsRouter = require("./api/cars");
 app.use("/api", carsRouter);
+
 
 const start = async () => {
 
