@@ -27,6 +27,8 @@ app.get("/api", async (req, res) => {
 });
 
 const carsRouter = require("./api/cars");
+const sendMessage = require("./functions/sendMessage");
+const logger = require("./functions/logger");
 app.use("/api", carsRouter);
 
 
@@ -44,6 +46,7 @@ const start = async () => {
     const text = msg.text;
     const chatId = msg.chat.id;
 
+    console.log(text)
     console.log(chatId)
 
     const data = {
@@ -64,14 +67,20 @@ const start = async () => {
     try {
 
       if (text === "/start") {
-        return bot.sendMessage(
-          chatId,
-          `Добро пожаловать в телеграм бота VAG сообщества Чебоксар!`,
-          menu
-        );
+        sendMessage(bot, chatId, 'Test log', null, menu)
+        // return bot.sendMessage(
+        //   chatId,
+        //   `Добро пожаловать в телеграм бота VAG сообщества Чебоксар!`,
+        //   menu
+        // );
       }
 
       if (text === "/go") {
+        return bot.sendMessage(
+          chatId,
+          `ywefyfew`,
+          menu
+        );
         // const user = await getUserInfo(chatId);
         //
         // if (user) {
@@ -84,10 +93,12 @@ const start = async () => {
 
       }
 
-    } catch (error) {
-      return bot.sendMessage(chatId, "Произошла какая то ошибка!", menu);
+    } catch (err) {
+      logger("Не отработал сценарий чата", err)
+      console.log(err)
     }
   })
+
 
 }
 

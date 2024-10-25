@@ -4,6 +4,7 @@
 /.idea
 /node_modules
 /etc
+/logs
 /root
 /img/cars
 /.pnp
