@@ -1,7 +1,7 @@
-const sequelize = require('./db');
-const { DataTypes } = require('sequelize');
+import sequelize from './db.js';
+import { DataTypes } from 'sequelize';
 
-const Users = sequelize.define('users', {
+export const Users = sequelize.define('users', {
 	id: { type: DataTypes.INTEGER, primaryKey: true, unique: true, autoIncrement: true },
 	chat_id: { type: DataTypes.BIGINT, unique: true },
 	user_name: { type: DataTypes.STRING, allowNull: false },
@@ -10,7 +10,7 @@ const Users = sequelize.define('users', {
 	timestamps: true
 });
 
-const Cars = sequelize.define('cars', {
+export const Cars = sequelize.define('cars', {
 	id: { type: DataTypes.INTEGER, primaryKey: true, unique: true, autoIncrement: true },
 	car_brand: { type: DataTypes.STRING, allowNull: false },
 	car_model: { type: DataTypes.STRING, allowNull: false },
@@ -32,10 +32,3 @@ Cars.belongsTo(Users, {
 	foreignKey: 'chat_id',
 	targetKey: 'chat_id'
 });
-
-
-
-module.exports = {
-	Users,
-	Cars,
-};

@@ -1,10 +1,10 @@
-const { Sequelize } = require("sequelize");
+import { Sequelize } from "sequelize";
 
 const user = process.env.DB_USER;
 const password = process.env.DB_PASSWORD;
 const port = process.env.DB_PORT;
 
-module.exports = new Sequelize(
+const connectDB =  new Sequelize(
 	"postgres",
 	user,
 	password,
@@ -14,3 +14,5 @@ module.exports = new Sequelize(
 		dialect: "postgres",
 	}
 );
+
+export default connectDB;

@@ -1,4 +1,4 @@
-const logger = require("./logger");
+import logger from "../functions/logger.js";
 
 const sendMessage = (bot, chatId, text, photo, keyboard) => {
   try {
@@ -14,4 +14,4 @@ const sendMessage = (bot, chatId, text, photo, keyboard) => {
   }
 }
 
-module.exports = sendMessage;
+export default sendMessage;

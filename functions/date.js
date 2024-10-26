@@ -1,11 +1,9 @@
-const moment = require('moment-timezone');
+import moment from 'moment-timezone';
 
-const getFormattedDate = () => {
+export const getFormattedDate = () => {
   return moment().tz('Europe/Moscow').format('DD-MM-YYYY');
 };
 
-const getFormattedDateTime = () => {
+export const getFormattedDateTime = () => {
   return moment().tz('Europe/Moscow').format('YYYY-MM-DD HH:mm:ss');
 };
-
-module.exports = {getFormattedDate, getFormattedDateTime}

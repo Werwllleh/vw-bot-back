@@ -1,9 +1,9 @@
-const sequelize = require("../db");
+import connectDB from "../db.js";
 
 const dbConnect = async () => {
   try {
-    await sequelize.authenticate();
-    sequelize.sync()
+    await connectDB.authenticate();
+    connectDB.sync()
       .then(() => console.log('Tables created/updated successfully'))
       .catch((error) => console.error('Error creating tables:', error));
   } catch (e) {
@@ -11,4 +11,4 @@ const dbConnect = async () => {
   }
 }
 
-module.exports = dbConnect;
+export default dbConnect;

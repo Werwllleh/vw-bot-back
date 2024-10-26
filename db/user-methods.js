@@ -1,6 +1,6 @@
-const {Users, Cars} = require("../models");
+import {Users, Cars} from '../models.js';
 
-const createUser = async (data) => {
+export const createUser = async (data) => {
   try {
     return await Users.create({
       chat_id: data.chat_id,
@@ -12,7 +12,7 @@ const createUser = async (data) => {
   }
 }
 
-const createUserCar = async (chatId, data) => {
+export const createUserCar = async (chatId, data) => {
   try {
     return await Cars.create({
       car_brand: data.car_brand,
@@ -28,7 +28,7 @@ const createUserCar = async (chatId, data) => {
   }
 }
 
-const getUserInfo = async (chatId) => {
+export const getUserInfo = async (chatId) => {
   try {
     return await Users.findOne({
       where: {chat_id: chatId},
@@ -38,5 +38,3 @@ const getUserInfo = async (chatId) => {
     console.error('Ошибка при получении инфо пользователя', error);
   }
 }
-
-module.exports = {createUser, createUserCar, getUserInfo}

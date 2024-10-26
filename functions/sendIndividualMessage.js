@@ -1,6 +1,6 @@
 
 
-const sendIndividualMessage = (bot, chatId, text, photo) => {
+export const sendIndividualMessage = (bot, chatId, text, photo) => {
   try {
     if (photo) {
       bot.sendPhoto(chatId, photo);
@@ -10,5 +10,3 @@ const sendIndividualMessage = (bot, chatId, text, photo) => {
     return bot.sendMessage(446012794, error);
   }
 }
-
-module.exports = sendIndividualMessage;

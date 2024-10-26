@@ -1,4 +1,4 @@
-const cars = {
+export const cars = {
   'volkswagen': [
     'amarok', 'arteon', 'atlas', 'atlas cross sport', 'beetle', 'bora', 'caddy', 'caravelle', 'golf', 'golf plus', 'golf GTI', 'golf R', 'ID.3', 'ID.4', 'ID.5', 'ID.6', 'ID.7', 'jetta', 'jetta GLI', 'multivan', 'passat', 'passat Alltrack', 'passat CC', 'phaeton', 'polo', 'cross polo', 'scirocco', 'sharan', 'taos', 'teramont', 'tiguan', 'touareg', 'touran', 'transporter'
   ],
@@ -18,5 +18,3 @@ const cars = {
     'aventador', 'gallardo', 'huracan', 'murcielago', 'urus',
   ]
 }
-
-module.exports = {cars}

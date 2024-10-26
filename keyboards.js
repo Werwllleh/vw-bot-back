@@ -1,8 +1,8 @@
-require('dotenv').config();
+import 'dotenv/config';
 
 const webAppUrl = process.env.URL;
 
-module.exports = {
+export const keyBoard = {
   // menu: {
   // 	reply_markup: {
   // 		// Добавляем все кнопки

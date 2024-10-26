@@ -1,8 +1,9 @@
 {
   "name": "bot-back",
+  "type": "module",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "exports": "./index.js",
   "scripts": {
     "start": "nodemon index.js"
   },
@@ -20,6 +21,8 @@
     "express": "^4.21.1",
     "express-fileupload": "^1.5.1",
     "file-system": "^2.2.2",
+    "imagemin": "^9.0.0",
+    "imagemin-webp": "^8.0.0",
     "moment-timezone": "^0.5.46",
     "mv": "^2.1.1",
     "node-telegram-bot-api": "^0.66.0",
