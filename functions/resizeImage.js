@@ -1,45 +1,40 @@
 import path from 'path';
-import imagemin from 'imagemin';
-import imageminWebp from 'imagemin-webp';
+import fs from "fs";
 import logger from "./logger.js";
-import { access, constants } from "fs/promises";
+import {access, copyFile, unlink, rm, constants} from "fs/promises";
 import sharp from 'sharp';
 
-const resizeImage = async (imagePath, saveDirectory) => {
+const resizeImage = async (filePath, originalDir, tempDir) => {
   try {
-    const filePath = path.resolve(saveDirectory, imagePath);
 
-    // Проверка существования файла
-    await access(filePath, constants.F_OK)
-      .catch((err) => {
-        logger('Файл для оптимизации не найден', err);
-        throw new Error('Файл не найден');
-      });
+    console.log(filePath)
+    console.log(originalDir)
+    console.log(tempDir)
 
-    // Изменение размера изображения
-    /*await sharp(filePath)
+    const fileData = path.basename(filePath).split('.');
+    const optimizedFileName = `${fileData[0]}.webp`;
+
+    await access(filePath, constants.F_OK);
+
+    await sharp(filePath)
       .resize(1000, 1000, {
-        fit: 'inside',           // Пропорциональное уменьшение
-        withoutEnlargement: true // Не увеличивать, если меньше
+        fit: 'inside',
+        withoutEnlargement: true
       })
-      .toFile(path.resolve(saveDirectory, path.basename('resized__' + filePath)))
-      .catch((err) => {
-        logger('Ошибка изменения размера изображения', err);
-        throw new Error('Ошибка изменения размера');
-      });*/
+      .webp({quality: 50})
+      .toFile(path.resolve(tempDir, optimizedFileName))
 
-    // Сжатие изображения
-    const webpImage = await imagemin([filePath], {
-      destination: saveDirectory,
-      plugins: [imageminWebp({ quality: 50 })],
-    });
+    await copyFile(path.resolve(tempDir, optimizedFileName), path.resolve(originalDir, optimizedFileName))
 
-    const optimizedImage = path.basename(webpImage[0].destinationPath);
-    return optimizedImage;
+    await unlink(path.resolve(tempDir, optimizedFileName))
+    // await rm(filePath, {recursive: true})
+    // await unlink(filePath)
+
+    return {optimizedFile: optimizedFileName};
 
   } catch (err) {
-    logger(`Ошибка конвертации изображения в WebP: ${imagePath}`, err);
-    throw new Error(`Ошибка обработки изображения: ${imagePath}`);
+    logger(`Ошибка обработки изображения:`, err);
+    throw new Error(`Ошибка обработки изображения: ${err}`);
   }
 };
 

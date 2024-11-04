@@ -18,7 +18,7 @@ export const keyBoard = {
     reply_markup: {
       keyboard: [
         [{ text: "Ближайшая встреча" }, { text: "Партнеры" }],
-        [{ text: "Профиль" }],
+        [{ text: "Профиль" }, { text: "Регистрация" }],
       ],
     },
   },
@@ -34,18 +34,18 @@ export const keyBoard = {
       ],
     },
   },
-  // reg: {
-  //   reply_markup: {
-  //     keyboard: [
-  //       [
-  //         {
-  //           text: "Регистрация",
-  //           web_app: { url: webAppUrl + "/form" },
-  //         },
-  //       ],
-  //     ],
-  //   },
-  // },
+  reg: {
+    reply_markup: {
+      keyboard: [
+        [
+          {
+            text: "Регистрация",
+            web_app: { url: webAppUrl + "/registration" },
+          },
+        ],
+      ],
+    },
+  },
   // ourcars: {
   //   reply_markup: {
   //     inline_keyboard: [

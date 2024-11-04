@@ -42,7 +42,7 @@ const start = async () => {
   ]);
 
   bot.on("message", async (msg) => {
-    const text = msg.text;
+    const text = msg.text.toLowerCase();
     const chatId = msg.chat.id;
 
     console.log(text);
@@ -65,7 +65,11 @@ const start = async () => {
 
     try {
       if (text === "/start") {
-        sendMessage(bot, chatId, 'Test log', null, keyBoard.menu);
+        return sendMessage(bot, chatId, 'Test log', null, keyBoard.menu);
+      }
+
+      if (text === "регистрация") {
+        return sendMessage(bot, chatId, 'Test log', null, keyBoard.reg);
       }
 
       if (text === "/go") {
