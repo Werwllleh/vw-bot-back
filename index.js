@@ -3,11 +3,13 @@ import TelegramBot from 'node-telegram-bot-api';
 import express from 'express';
 import cors from 'cors';
 import dbConnect from './functions/dbConnect.js';
-import { createUser, createUserCar, getUserInfo } from './db/user-methods.js';
 import fileUpload from 'express-fileupload';
 
 
 import carsRouter from './api/cars.js';
+import userRouter from './api/users.js';
+
+
 import sendMessage from './functions/sendMessage.js';
 import logger from './functions/logger.js';
 import {keyBoard} from "./keyboards.js";
@@ -31,6 +33,7 @@ app.get("/api", async (req, res) => {
 });
 
 app.use("/api", carsRouter);
+app.use("/api", userRouter);
 
 const start = async () => {
   await dbConnect(); // Подключаем базу данных
