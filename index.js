@@ -50,8 +50,7 @@ const start = async () => {
 
     const data = {
       chat_id: chatId,
-      user_name: 'Алексей',
-      user_birthday: '1999-10-05',
+      user_name: 'Алексей'
     };
 
     const carInfo = {
