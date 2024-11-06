@@ -13,6 +13,7 @@ import userRouter from './api/users.js';
 import sendMessage from './functions/sendMessage.js';
 import logger from './functions/logger.js';
 import {keyBoard} from "./keyboards.js";
+import {getUserInfo} from "./db/user-methods.js";
 
 const token = process.env.TOKEN_TEST;
 const port = process.env.PORT;
@@ -51,19 +52,10 @@ const start = async () => {
     console.log(text);
     console.log(chatId);
 
-    const data = {
-      chat_id: chatId,
-      user_name: 'Алексей'
-    };
+    await getUserInfo(chatId).then(data => {
+      console.log(data)
+    })
 
-    const carInfo = {
-      car_brand: 'Skoda',
-      car_model: 'Octavia',
-      car_year: 2017,
-      car_number: 'К868ОР21',
-      car_note: 'Тачка админа тест',
-      car_images: JSON.stringify(['image1.jpg', 'image2.jpg']),
-    };
 
     try {
       if (text === "/start") {

@@ -15,7 +15,7 @@ export const Cars = sequelize.define('cars', {
 	car_brand: { type: DataTypes.STRING, allowNull: false },
 	car_model: { type: DataTypes.STRING, allowNull: false },
 	car_year: { type: DataTypes.INTEGER, allowNull: false },
-	car_number: { type: DataTypes.STRING, allowNull: false },
+	car_number: { type: DataTypes.STRING, allowNull: false, unique: true },
 	car_note: { type: DataTypes.TEXT },
 	car_images: { type: DataTypes.TEXT, allowNull: false }, // Для хранения названий фотографий
 }, {

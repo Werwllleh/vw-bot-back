@@ -1,10 +1,12 @@
 import express from "express";
 import logger from "../functions/logger.js";
 import {Cars, Users} from "../models.js";
+import {getUserInfo} from "../db/user-methods.js";
 
 
 const router = express.Router();
 
+//создание пользователя в БД
 export const createUser = async (chatId, data) => {
   try {
     return await Users.create({
@@ -16,6 +18,7 @@ export const createUser = async (chatId, data) => {
   }
 }
 
+//добавление авто пользователя в БД
 export const createUserCar = async (chatId, cars) => {
   try {
     if (cars.length) {
@@ -23,8 +26,8 @@ export const createUserCar = async (chatId, cars) => {
         return await Cars.create({
           car_brand: car.brand,
           car_model: car.model,
-          car_year: car.car_year,
-          car_number: car.car_number,
+          car_year: car.car_year.trim(),
+          car_number: car.car_number.trim().toUpperCase(),
           car_note: car.notation,
           car_images: car.images,
           chat_id: chatId,
@@ -41,22 +44,35 @@ router.post("/create-user", async (req, res) => {
     const userData = req.body.data;
 
     if (userData) {
-      console.log(userData);
 
       const userChatId = userData.user.chatId;
       const userName = userData.user.name;
 
-      console.log(userChatId)
+      const checkUser = await getUserInfo(userChatId);
 
-      await createUser(userChatId, userData.user);
-      await createUserCar(userChatId, userData.cars);
+      //проверяем есть ли пользователь
+      if (!checkUser) {
+        await createUser(userChatId, userData.user);
+        await createUserCar(userChatId, userData.cars);
 
-      return res.status(200).send("OK");
+        return res.status(200).send("OK");
+      } else {
+        return res.status(200).send("User already exists");
+      }
     }
-
   } catch (err) {
     console.log('Ошибка при создании пользователя - ' + err);
     logger('Ошибка при создании пользователя', err);
+    return res.status(500).send(err);
+  }
+})
+
+router.post("/about-user", async (req, res) => {
+  try {
+    const chatId = req.body.chatId;
+    const data = await getUserInfo(chatId);
+    return res.status(200).send(data);
+  } catch (err) {
     return res.status(500).send(err);
   }
 })

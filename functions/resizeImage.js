@@ -7,10 +7,6 @@ import sharp from 'sharp';
 const resizeImage = async (filePath, originalDir, tempDir) => {
   try {
 
-    console.log(filePath)
-    console.log(originalDir)
-    console.log(tempDir)
-
     const fileData = path.basename(filePath).split('.');
     const optimizedFileName = `${fileData[0]}.webp`;
 
