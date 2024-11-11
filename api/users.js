@@ -57,7 +57,9 @@ router.post("/create-user", async (req, res) => {
 
         return res.status(200).send("OK");
       } else {
-        return res.status(200).send("User already exists");
+        await createUserCar(userChatId, userData.cars);
+        return res.status(200).send("OK");
+        // return res.status(200).send("User already exists");
       }
     }
   } catch (err) {
