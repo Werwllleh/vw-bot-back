@@ -47,6 +47,8 @@ router.post("/get-car-info", async (req, res) => {
   try {
     const car_number = req.body.car_number;
     const car = await getCarInfo(car_number);
+
+    console.log(car)
     return res.status(200).send(car);
   } catch (e) {
     res.status(500).send(e);
@@ -116,5 +118,6 @@ router.post("/upload/remove", async (req, res) => {
     return res.status(500).send(err.message);
   }
 });
+
 
 export default router;

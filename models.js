@@ -22,6 +22,7 @@ export const Cars = sequelize.define('cars', {
 	timestamps: true
 });
 
+
 // Установка связи между Users и Cars
 Users.hasMany(Cars, {
 	foreignKey: 'chat_id',
