@@ -2,6 +2,7 @@ import express from "express";
 import logger from "../functions/logger.js";
 import {Cars, Users} from "../models.js";
 import {getUserInfo} from "../db/user-methods.js";
+import {getRandomColor} from "../functions/randomColor.js";
 
 
 const router = express.Router();
@@ -11,7 +12,8 @@ export const createUser = async (chatId, data) => {
   try {
     return await Users.create({
       chat_id: chatId,
-      user_name: data.name.trim()
+      user_name: data.name.trim(),
+      user_color: getRandomColor()
     });
   } catch (error) {
     console.error('Ошибка при создании пользователя', error);
@@ -39,6 +41,7 @@ export const createUserCar = async (chatId, cars) => {
   }
 }
 
+
 router.post("/create-user", async (req, res) => {
   try {
     const userData = req.body.data;
@@ -57,9 +60,9 @@ router.post("/create-user", async (req, res) => {
 
         return res.status(200).send("OK");
       } else {
-        await createUserCar(userChatId, userData.cars);
-        return res.status(200).send("OK");
-        // return res.status(200).send("User already exists");
+        // await createUserCar(userChatId, userData.cars);
+        // return res.status(200).send("OK");
+        return res.status(200).send("User already exists");
       }
     }
   } catch (err) {

@@ -15,6 +15,7 @@ export const getUserInfo = async (chatId) => {
       id: userData.id,
       chat_id: userData.chat_id,
       user_name: userData.user_name,
+      user_color: userData.user_color,
       cars: userData.cars.map((car) => ({
         car_id: car.id,
         car_brand: car.car_brand,
