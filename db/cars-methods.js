@@ -17,3 +17,16 @@ export const getCarInfo = async (car_number) => {
     console.error('Ошибка при получении инфо автомобиля', err);
   }
 }
+
+export const getUsersCars = async () => {
+  try {
+    const carsData = await Cars.findAll({
+      include: Users, // Включая владельца авто
+    });
+
+    return carsData;
+
+  } catch (err) {
+    console.error('Ошибка при получении всех автомобилей', err);
+  }
+}

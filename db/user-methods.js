@@ -33,3 +33,16 @@ export const getUserInfo = async (chatId) => {
   }
 }
 
+export const getAllUsers = async () => {
+  try {
+
+    const usersData = await Users.findAll({
+      include: Cars,
+    });
+
+    return usersData;
+
+  } catch (err) {
+    console.error('Ошибка при получении всех пользователей', err);
+  }
+}

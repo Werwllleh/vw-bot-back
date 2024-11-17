@@ -33,6 +33,8 @@ app.get("/api", async (req, res) => {
   return res.json("work");
 });
 
+app.use("/api/car", express.static("img/cars"));
+
 app.use("/api", carsRouter);
 app.use("/api", userRouter);
 
@@ -51,11 +53,6 @@ const start = async () => {
 
     console.log(text);
     console.log(chatId);
-
-    await getUserInfo(chatId).then(data => {
-      console.log(data)
-    })
-
 
     try {
       if (text === "/start") {

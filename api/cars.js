@@ -4,9 +4,8 @@ import logger from "../functions/logger.js";
 import {v4 as uuidv4} from "uuid";
 import fs from "fs";
 import path from "path";
-import resizeImage from "../functions/resizeImage.js";
 import {access, constants} from "fs/promises";
-import {getCarInfo} from "../db/cars-methods.js";
+import {getCarInfo, getUsersCars} from "../db/cars-methods.js";
 
 const router = express.Router();
 
@@ -35,6 +34,7 @@ export const deleteFile = async (imageFile) => {
   });
 };
 
+
 router.get("/get-cars", async (req, res) => {
   try {
     return res.json(cars);
@@ -50,6 +50,16 @@ router.post("/get-car-info", async (req, res) => {
 
     console.log(car)
     return res.status(200).send(car);
+  } catch (e) {
+    res.status(500).send(e);
+  }
+});
+
+router.post("/get-users-cars", async (req, res) => {
+  try {
+    const cars = await getUsersCars();
+
+    return res.status(200).send(cars);
   } catch (e) {
     res.status(500).send(e);
   }
@@ -80,22 +90,16 @@ router.post("/upload", async (req, res) => {
 
       const filePath = path.resolve(tempDir, imageFinalFile);
 
-      // Сохраняем
+      // Сохраняем во временную папку
       await image.mv(filePath);
 
-      const data = await resizeImage(filePath, carsDir, tempDir);
+      const fileName = path.basename(filePath);
+      return res.json(fileName);
 
+      /*const data = await resizeImage(filePath, carsDir, tempDir);
       if (data.optimizedFile) {
-        /*try {
-          await fs.unlink(filePath, err => {
-            if (err) return console.log(err)
-            console.log('Оригинал удален')
-          })
-        } catch (err) {
-          console.log(err)
-        }*/
         return res.json(data.optimizedFile);
-      }
+      }*/
     }
   } catch (err) {
     console.log(err)
@@ -107,7 +111,7 @@ router.post("/upload", async (req, res) => {
 router.post("/upload/remove", async (req, res) => {
   try {
     const imageFile = req.body.fileName;
-    const pathFile = path.resolve('img/cars', imageFile);
+    const pathFile = path.resolve('img/temp', imageFile);
 
     await access(pathFile, constants.F_OK);
     await deleteFile(pathFile);
