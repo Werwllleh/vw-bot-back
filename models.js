@@ -33,3 +33,29 @@ Cars.belongsTo(Users, {
 	foreignKey: 'chat_id',
 	targetKey: 'chat_id'
 });
+
+
+export const Partners = sequelize.define('partners', {
+	id: { type: DataTypes.INTEGER, primaryKey: true, unique: true, autoIncrement: true },
+	title: { type: DataTypes.STRING, allowNull: false },
+	description: { type: DataTypes.STRING, allowNull: false },
+	links: { type: DataTypes.TEXT, allowNull: true },
+	phones: { type: DataTypes.TEXT, allowNull: true },
+	address_text: { type: DataTypes.STRING, allowNull: false },
+	address_coordinates: { type: DataTypes.TEXT, allowNull: false },
+	categories: { type: DataTypes.TEXT, allowNull: false },
+	images: { type: DataTypes.TEXT, allowNull: false },
+	status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+}, {
+	timestamps: true
+});
+
+export const PartnersCategories = sequelize.define('partners_categories', {
+	id: { type: DataTypes.INTEGER, primaryKey: true, unique: true, autoIncrement: true },
+	label: { type: DataTypes.STRING, allowNull: false },
+	value: { type: DataTypes.STRING, allowNull: false },
+}, {
+	timestamps: false
+})
+
+

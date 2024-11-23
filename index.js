@@ -34,6 +34,7 @@ app.get("/api", async (req, res) => {
 });
 
 app.use("/api/car", express.static("img/cars"));
+app.use("/api/bot", express.static("img/bot-data"));
 
 app.use("/api", carsRouter);
 app.use("/api", userRouter);
