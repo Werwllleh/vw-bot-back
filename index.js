@@ -8,6 +8,7 @@ import fileUpload from 'express-fileupload';
 
 import carsRouter from './api/cars.js';
 import userRouter from './api/users.js';
+import partnersRouter from './api/partners.js';
 
 
 import sendMessage from './functions/sendMessage.js';
@@ -38,6 +39,7 @@ app.use("/api/bot", express.static("img/bot-data"));
 
 app.use("/api", carsRouter);
 app.use("/api", userRouter);
+app.use("/api", partnersRouter);
 
 const start = async () => {
   await dbConnect(); // Подключаем базу данных

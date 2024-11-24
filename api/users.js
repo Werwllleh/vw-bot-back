@@ -7,6 +7,8 @@ import resizeImage from "../functions/resizeImage.js";
 import path from "path";
 import fs from "fs";
 
+const adminId = process.env.ADMIN;
+
 
 const router = express.Router();
 
@@ -16,7 +18,8 @@ export const createUser = async (chatId, data) => {
     return await Users.create({
       chat_id: chatId,
       user_name: data.name.trim(),
-      user_color: getRandomColor()
+      user_color: getRandomColor(),
+      user_admin: Number(chatId) === Number(adminId),
     });
   } catch (error) {
     console.error('Ошибка при создании пользователя', error);
