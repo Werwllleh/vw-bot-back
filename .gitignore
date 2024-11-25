@@ -6,7 +6,8 @@
 /etc
 /logs
 /root
-/img
+/img/cars
+/img/temp
 /.pnp
 /.vscode
 

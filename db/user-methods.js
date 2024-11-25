@@ -7,6 +7,7 @@ export const getUserInfo = async (chatId) => {
       include: Cars, // Включаем связанные автомобили
     });
 
+
     if (userData === null) {
       return null; // Если пользователь не найден, возвращаем null
     } else {

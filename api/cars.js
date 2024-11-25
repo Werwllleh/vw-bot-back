@@ -1,5 +1,5 @@
 import express from "express";
-import {cars} from "../utils/consts.js";
+import {BRANDS, MODELS} from "../utils/consts.js";
 import logger from "../functions/logger.js";
 import {v4 as uuidv4} from "uuid";
 import fs from "fs";
@@ -37,6 +37,10 @@ export const deleteFile = async (imageFile) => {
 
 router.get("/get-cars", async (req, res) => {
   try {
+    const cars = {
+      brands: BRANDS,
+      models: MODELS
+    }
     return res.json(cars);
   } catch (e) {
     res.status(500).send(e);
