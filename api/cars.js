@@ -5,7 +5,7 @@ import {v4 as uuidv4} from "uuid";
 import fs from "fs";
 import path from "path";
 import {access, constants} from "fs/promises";
-import {getCarInfo, getUsersCars} from "../db/cars-methods.js";
+import {createUserCar, getCarInfo, getUsersCars} from "../db/cars-methods.js";
 
 const router = express.Router();
 
@@ -34,6 +34,26 @@ export const deleteFile = async (imageFile) => {
   });
 };
 
+router.post("/add-car", async (req, res) => {
+  try {
+    const chatId = req.body.chatId;
+    const carData = req.body.data;
+
+    if (chatId && carData) {
+      await createUserCar(chatId, carData)
+        .then(() => {
+          return res.status(200).send("OK")
+        })
+        .catch(() => {
+          return res.status(500).send("Ошибка при добавлении авто")
+        })
+    }
+
+
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+});
 
 router.get("/get-cars", async (req, res) => {
   try {

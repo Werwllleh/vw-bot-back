@@ -13,11 +13,11 @@ const adminId = process.env.ADMIN;
 const router = express.Router();
 
 //создание пользователя в БД
-export const createUser = async (chatId, data) => {
+export const createUser = async (chatId, userName) => {
   try {
     return await Users.create({
       chat_id: chatId,
-      user_name: data.name.trim(),
+      user_name: userName.trim(),
       user_color: getRandomColor(),
       user_admin: Number(chatId) === Number(adminId),
     });
@@ -26,67 +26,40 @@ export const createUser = async (chatId, data) => {
   }
 }
 
-//Фотки перемешаются в основную директорию только после успешной регистрации
-const resizedRegImages = async (imagesArray) => {
-  const carsDir = path.resolve("img/cars");
-  const tempDir = path.resolve("img/temp");
 
-  if (!fs.existsSync(carsDir)) {
-    fs.mkdirSync(carsDir, { recursive: true });
-  }
-
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir, { recursive: true });
-  }
-
-  let resizedImages = [];
-
-  const parsedImages = JSON.parse(imagesArray);
-  if (parsedImages.length) {
-    for (const image of parsedImages) {
-      const filePath = path.resolve(tempDir, image);
-      const compressImage = await resizeImage(filePath, carsDir, tempDir);
-
-      if (compressImage) {
-        resizedImages.push(compressImage.optimizedFile);
-      }
-    }
-  }
-
-  return resizedImages;
-};
-
-//добавление авто пользователя в БД
-export const createUserCar = async (chatId, cars) => {
-  try {
-    if (cars.length) {
-      for (const car of cars) {
-        const images = await resizedRegImages(car.images);
-
-        if (images.length) {
-          await Cars.create({
-            car_brand: car.brand,
-            car_model: car.model,
-            car_year: car.car_year.trim(),
-            car_number: car.car_number.trim().toUpperCase(),
-            car_note: car.notation,
-            car_images: JSON.stringify(images),
-            chat_id: chatId,
-          });
-        }
-      }
-    }
-  } catch (error) {
-    console.error('Ошибка при создании авто', error);
-  }
-};
 
 
 router.post("/create-user", async (req, res) => {
   try {
-    const userData = req.body.data;
+    const userData = req.body;
 
-    if (userData) {
+    const userChatId = userData.chat_id;
+    const userName = userData.username;
+
+    console.log(userData)
+
+
+    const checkUser = await getUserInfo(userChatId);
+
+    if (checkUser) {
+      logger('Пользователь уже был создан')
+      return res.status(500).json({
+        message: 'User was created',
+        success: false,
+      });
+    } else {
+      await createUser(userChatId, userName)
+        .then(() => {
+          return res.status(200).send(true);
+        })
+        .catch((err) => {
+          logger('Ошибка создания пользователя', err)
+          return res.status(500).send(false).message('error user create');
+        })
+    }
+
+
+    /*if (userData) {
 
       const userChatId = userData.user.chatId;
       const userName = userData.user.name;
@@ -96,7 +69,7 @@ router.post("/create-user", async (req, res) => {
       //проверяем есть ли пользователь
       if (!checkUser) {
         await createUser(userChatId, userData.user);
-        await createUserCar(userChatId, userData.cars);
+        await createUserCar(userChatId, userData.car);
 
         return res.status(200).send("OK");
       } else {
@@ -104,7 +77,7 @@ router.post("/create-user", async (req, res) => {
         // return res.status(200).send("OK");
         return res.status(200).send("User already exists");
       }
-    }
+    }*/
   } catch (err) {
     console.log('Ошибка при создании пользователя - ' + err);
     logger('Ошибка при создании пользователя', err);
