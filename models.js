@@ -44,8 +44,8 @@ export const Partners = sequelize.define('partners', {
 	phones: { type: DataTypes.TEXT, allowNull: true },
 	address_text: { type: DataTypes.STRING, allowNull: false },
 	address_coordinates: { type: DataTypes.TEXT, allowNull: false },
-	categories: { type: DataTypes.TEXT, allowNull: false },
-	images: { type: DataTypes.TEXT, allowNull: false },
+	// category: { type: DataTypes.INTEGER, allowNull: false },
+	images: { type: DataTypes.TEXT, allowNull: true },
 	status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
 }, {
 	timestamps: true
@@ -58,5 +58,9 @@ export const PartnersCategories = sequelize.define('partners_categories', {
 }, {
 	timestamps: false
 })
+
+// Промежуточная таблица создается автоматически Sequelize
+Partners.belongsToMany(PartnersCategories, { through: 'PartnersCategoriesPartners' });
+PartnersCategories.belongsToMany(Partners, { through: 'PartnersCategoriesPartners' });
 
 
