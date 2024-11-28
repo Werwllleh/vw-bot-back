@@ -67,12 +67,11 @@ export const createPartner = async (chatId, data) => {
     const createPartner = await Partners.create({
       title: data.title,
       description: data.description,
-      categories: JSON.stringify(categoriesIdArr),
       links: JSON.stringify(data.links),
       phones: JSON.stringify(data.phones),
       address_text: data.address_text,
       address_coordinates: JSON.stringify(data.address_coordinates),
-      status: false
+      status: userInfo.user_admin
     });
 
     await Partners.findByPk(createPartner.id)
@@ -86,66 +85,7 @@ export const createPartner = async (chatId, data) => {
             partner.addPartnersCategories(category);
           })
         })
-
       })
-
-    /*Student.findOne({where: {name: "Tom"}})
-      .then(student=>{
-        if(!student) return;
-
-        // добавим Тому курс по JavaScript
-        Course.findOne({where: {name: "JavaScript"}})
-          .then(course=>{
-            if(!course) return;
-            student.addCourse(course, {through:{grade:1}});
-          });
-      });*/
-
-    /*await Student.findOne({where: {name: "Tom"}})
-      .then(student=>{
-        if(!student) return;
-        student.getCourses().then(courses=>{
-          courses.map(course => {
-            console.log(course.name);
-          })
-          /!*for(course of courses){
-
-          }*!/
-        });
-      });*/
-
-
-
-    /*if (userInfo.user_admin) {
-      await Partners.create({
-        title: data.title,
-        description: data.description,
-        categories: JSON.stringify(data.categories),
-        links: JSON.stringify(data.links),
-        phones: JSON.stringify(data.phones),
-        address_text: data.address_text,
-        address_coordinates: JSON.stringify(data.address_coordinates),
-        status: true
-      });
-    } else {
-      await Partners.create({
-        title: data.title,
-        description: data.description,
-        categories: JSON.stringify(data.categories),
-        links: JSON.stringify(data.links),
-        phones: JSON.stringify(data.phones),
-        address_text: data.address_text,
-        address_coordinates: JSON.stringify(data.address_coordinates),
-        status: false
-      });
-    }*/
-
-    /*
-    const category = await PartnersCategories.findByPk(categoryId);
-
-    */
-
-
 
     return true;
   } catch (err) {
@@ -153,3 +93,52 @@ export const createPartner = async (chatId, data) => {
     throw err; // Для дальнейшей обработки ошибки
   }
 };
+
+export const getCategoryDataById = async (categoryId) => {
+  try {
+    const categoryData = await PartnersCategories.findByPk(categoryId);
+    return categoryData;
+  } catch (err) {
+    console.error('Ошибка при получения инфо о категории партнера', err);
+    throw err; // Для дальнейшей обработки ошибки
+  }
+}
+
+export const getPartnersWithCategories = async () => {
+  try {
+    // Запрашиваем партнеров с их категориями
+    const partners = await Partners.findAll({
+      order: [["status", "ASC"]],
+      include: {
+        model: PartnersCategories,
+        through: { attributes: [] }, // Не включать данные промежуточной таблицы
+        // attributes: ['id', 'label', 'value'], // Включить только ID категорий
+      }
+    });
+
+    // Преобразуем данные, чтобы категории были массивом
+    const result = partners.map((partner) => ({
+      id: partner.id,
+      title: partner.title,
+      description: partner.description,
+      links: JSON.parse(partner.links),
+      phones: JSON.parse(partner.phones),
+      address_text: partner.address_text,
+      address_coordinates: JSON.parse(partner.address_coordinates),
+      images: partner.images,
+      status: partner.status,
+      rejected: partner.rejected,
+      categories: partner.partnersCategories.map((cat) => ({
+        id: cat.id,
+        label: cat.label,
+        value: cat.value,
+      })), // Список ID категорий
+    }));
+
+    return result;
+  } catch (error) {
+    console.error('Ошибка при получении партнеров с категориями:', error);
+    throw error;
+  }
+}
+

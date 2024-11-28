@@ -38,7 +38,6 @@ Cars.belongsTo(Users, {
 
 export const Partners = sequelize.define('partners', {
   id: {type: DataTypes.INTEGER, primaryKey: true, unique: true, autoIncrement: true},
-  categories: {type: DataTypes.TEXT, allowNull: false},
   title: {type: DataTypes.STRING, allowNull: false},
   description: {type: DataTypes.STRING, allowNull: false},
   links: {type: DataTypes.TEXT, allowNull: true},
@@ -47,6 +46,7 @@ export const Partners = sequelize.define('partners', {
   address_coordinates: {type: DataTypes.TEXT, allowNull: false},
   images: {type: DataTypes.TEXT, allowNull: true},
   status: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+  rejected: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
 }, {
   timestamps: true
 });
@@ -75,46 +75,4 @@ export const PartnerCategoryConnect = sequelize.define('partnerCategoryConnect',
 Partners.belongsToMany(PartnersCategories, {through: PartnerCategoryConnect});
 PartnersCategories.belongsToMany(Partners, {through: PartnerCategoryConnect});
 
-
-/*export const Student = sequelize.define("student", {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-    allowNull: false
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false
-  }
-});
-
-export const Course = sequelize.define("course", {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-    allowNull: false
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false
-  }
-});
-
-// промежуточная сущность, которая связывает курс и студента
-export const Enrolment = sequelize.define("enrolment", {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-    allowNull: false
-  }
-},
-  {
-    timestamps: false
-  });
-
-Student.belongsToMany(Course, {through: Enrolment});
-Course.belongsToMany(Student, {through: Enrolment});*/
 

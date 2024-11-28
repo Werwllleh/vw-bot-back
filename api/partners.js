@@ -1,5 +1,11 @@
 import express from "express";
-import {createPartner, addPartnerCategory, deletePartnerCategory, getPartnersCategories} from "../db/partners-methods.js";
+import {
+  createPartner,
+  addPartnerCategory,
+  deletePartnerCategory,
+  getPartnersCategories,
+  getPartnersWithCategories
+} from "../db/partners-methods.js";
 
 const router = express.Router();
 
@@ -61,6 +67,15 @@ router.post("/add-partner", async (req, res) => {
       return res.status(500).send();
     }
 
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+})
+
+router.get("/get-partners", async (req, res) => {
+  try {
+    const data = await getPartnersWithCategories();
+    return res.status(200).send(data);
   } catch (err) {
     return res.status(500).send(err);
   }
