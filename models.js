@@ -76,3 +76,4 @@ Partners.belongsToMany(PartnersCategories, {through: PartnerCategoryConnect});
 PartnersCategories.belongsToMany(Partners, {through: PartnerCategoryConnect});
 
 
+
