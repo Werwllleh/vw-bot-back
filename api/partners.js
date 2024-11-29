@@ -1,10 +1,11 @@
 import express from "express";
 import {
-  createPartner,
   addPartnerCategory,
   deletePartnerCategory,
   getPartnersCategories,
-  getPartnersWithCategories
+  getPartnersWithCategories,
+  createUpdatePartner,
+  deletePartner, getPartnersForUsers
 } from "../db/partners-methods.js";
 
 const router = express.Router();
@@ -58,11 +59,12 @@ router.post("/add-partner", async (req, res) => {
 
     const chatId = req.body.chatId;
     const data = req.body.data;
+    const partnerId = req.body.partnerId;
 
-    const create = await createPartner(chatId, data);
+    const createUpdatePartnerStatus = await createUpdatePartner(chatId, data, partnerId);
 
-    if (create) {
-      return res.status(200).send(create);
+    if (createUpdatePartnerStatus) {
+      return res.status(200).send(createUpdatePartnerStatus);
     } else {
       return res.status(500).send();
     }
@@ -72,9 +74,37 @@ router.post("/add-partner", async (req, res) => {
   }
 })
 
-router.get("/get-partners", async (req, res) => {
+router.post("/delete-partner", async (req, res) => {
+  try {
+
+    const chatId = req.body.chatId;
+    const partnerId = req.body.partnerId;
+
+    const deleteStatus = await deletePartner(chatId, partnerId);
+
+    if (deleteStatus) {
+      return res.status(200).send(deleteStatus);
+    } else {
+      return res.status(500).send();
+    }
+
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+})
+
+router.get("/get-partners-admin", async (req, res) => {
   try {
     const data = await getPartnersWithCategories();
+    return res.status(200).send(data);
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+})
+
+router.get("/get-partners-users", async (req, res) => {
+  try {
+    const data = await getPartnersForUsers();
     return res.status(200).send(data);
   } catch (err) {
     return res.status(500).send(err);
