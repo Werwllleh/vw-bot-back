@@ -17,21 +17,45 @@ export const keyBoard = {
   menu: {
     reply_markup: {
       keyboard: [
-        [{ text: "Ближайшая встреча" }, { text: "Партнеры" }],
-        [{ text: "Профиль" }, { text: "Регистрация" }],
+        [
+          {text: "Ближайшая встреча"},
+          {
+            text: "Партнеры",
+            web_app: {url: webAppUrl + "/partners"},
+            request_location: true
+          },
+        ],
+        [
+          {
+            text: "Профиль",
+            web_app: {url: webAppUrl + "/profile"},
+            request_location: true
+          },
+          {text: "Регистрация"}
+        ],
       ],
     },
   },
   partners: {
     reply_markup: {
-      inline_keyboard: [
+      keyboard: [
+        [
+          {
+            text: "Партнеры",
+            web_app: {url: webAppUrl + "/partners"},
+            // request_location: true
+          },
+        ],
+      ],
+      /*inline_keyboard: [
         [
           {
             text: "Список партнеров",
             web_app: { url: webAppUrl + "/partners" },
+            request_location:true
           },
         ],
-      ],
+      ],*/
     },
   },
   reg: {
@@ -40,7 +64,7 @@ export const keyBoard = {
         [
           {
             text: "Регистрация",
-            web_app: { url: webAppUrl + "/registration" },
+            web_app: {url: webAppUrl + "/registration"},
           },
         ],
       ],

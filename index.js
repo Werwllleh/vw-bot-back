@@ -51,22 +51,29 @@ const start = async () => {
   ]);
 
   bot.on("message", async (msg) => {
-    const text = msg.text.toLowerCase();
+    // const text = msg.text.toLowerCase();
+    const text = msg.text;
     const chatId = msg.chat.id;
 
+    console.log(msg)
     console.log(text);
     console.log(chatId);
 
+
     try {
-      if (text === "/start") {
+      if (text.toLowerCase() === "/start") {
         return sendMessage(bot, chatId, 'Test log', null, keyBoard.menu);
       }
 
-      if (text === "регистрация") {
+      if (text.toLowerCase() === "регистрация") {
         return sendMessage(bot, chatId, 'Test log', null, keyBoard.reg);
       }
 
-      if (text === "/go") {
+      if (text.toLowerCase() === "партнеры") {
+        return sendMessage(bot, chatId, 'Партнеры тут', null, keyBoard.partners);
+      }
+
+      if (text.toLowerCase() === "/go") {
         return bot.sendMessage(chatId, `ywefyfew`, keyBoard.menu);
         // const user = await getUserInfo(chatId);
         //
@@ -80,7 +87,7 @@ const start = async () => {
       }
 
     } catch (err) {
-      logger("Не отработал сценарий чата", err);
+      logger("Не отработал сценарий бота", err);
       console.log(err);
     }
   });
