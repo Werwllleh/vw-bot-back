@@ -212,7 +212,6 @@ export const getPartnersForUsers = async () => {
     // Запрашиваем партнеров с их категориями
     const partners = await Partners.findAll({
       where: {
-        rejected: false,
         status: true
       },
       order: [["title", "ASC"]],
