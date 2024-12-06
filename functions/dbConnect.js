@@ -3,6 +3,7 @@ import connectDB from "../db.js";
 const dbConnect = async () => {
   try {
     await connectDB.authenticate();
+    // connectDB.sync({ alter: true})
     connectDB.sync()
       .then(() => console.log('Tables created/updated successfully'))
       .catch((error) => console.error('Error creating tables:', error));

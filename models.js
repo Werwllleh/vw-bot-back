@@ -45,7 +45,7 @@ export const Partners = sequelize.define('partners', {
   address_text: {type: DataTypes.STRING, allowNull: true, defaultValue: '-'},
   address_coordinates: {type: DataTypes.TEXT, allowNull: true, defaultValue: '-'},
   images: {type: DataTypes.TEXT, allowNull: true},
-  status: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+  active: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
   rejected: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
 }, {
   timestamps: true

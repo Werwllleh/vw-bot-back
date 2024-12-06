@@ -5,7 +5,7 @@ import {
   getPartnersCategories,
   getPartnersWithCategories,
   createUpdatePartner,
-  deletePartner, getPartnersForUsers
+  deletePartner, getPartnersForUsers, updatePartnerStatus
 } from "../db/partners-methods.js";
 
 const router = express.Router();
@@ -65,6 +65,26 @@ router.post("/add-partner", async (req, res) => {
 
     if (createUpdatePartnerStatus) {
       return res.status(200).send(createUpdatePartnerStatus);
+    } else {
+      return res.status(500).send();
+    }
+
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+})
+
+router.post("/update-partner-status", async (req, res) => {
+  try {
+
+    const chatId = req.body.chatId;
+    const partnerId = req.body.partnerId;
+    const data = req.body.data;
+
+    const updatePartnerStatusFunc = await updatePartnerStatus(chatId, partnerId, data);
+
+    if (updatePartnerStatusFunc) {
+      return res.status(200).send(updatePartnerStatusFunc);
     } else {
       return res.status(500).send();
     }

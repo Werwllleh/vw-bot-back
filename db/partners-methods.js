@@ -79,7 +79,7 @@ export const createUpdatePartner = async (chatId, data, partnerId) => {
         phones: JSON.stringify(data.phones),
         address_text: data.address_text,
         address_coordinates: JSON.stringify(data.address_coordinates),
-        status: userInfo.user_admin,
+        active: userInfo.user_admin,
       });
 
       // Находим созданного партнера
@@ -107,7 +107,7 @@ export const createUpdatePartner = async (chatId, data, partnerId) => {
           phones: JSON.stringify(data.phones),
           address_text: data.address_text,
           address_coordinates: JSON.stringify(data.address_coordinates),
-          status: userInfo.user_admin,
+          active: userInfo.user_admin,
         });
 
         // Удаляем существующие связи с категориями, чтобы привязать новые
@@ -173,7 +173,7 @@ export const getPartnersWithCategories = async () => {
   try {
     // Запрашиваем партнеров с их категориями
     const partners = await Partners.findAll({
-      order: [["status", "ASC"]],
+      order: [["active", "ASC"]],
       include: {
         model: PartnersCategories,
         through: {attributes: []}, // Не включать данные промежуточной таблицы
@@ -191,7 +191,7 @@ export const getPartnersWithCategories = async () => {
       address_text: partner.address_text,
       address_coordinates: JSON.parse(partner.address_coordinates),
       images: partner.images,
-      status: partner.status,
+      active: partner.active,
       rejected: partner.rejected,
       categories: partner.partnersCategories.map((cat) => ({
         id: cat.id,
@@ -212,7 +212,7 @@ export const getPartnersForUsers = async () => {
     // Запрашиваем партнеров с их категориями
     const partners = await Partners.findAll({
       where: {
-        status: true
+        active: true
       },
       order: [["title", "ASC"]],
       include: {
@@ -232,7 +232,7 @@ export const getPartnersForUsers = async () => {
       address_text: partner.address_text,
       address_coordinates: JSON.parse(partner.address_coordinates),
       images: partner.images,
-      status: partner.status,
+      active: partner.active,
       rejected: partner.rejected,
       categories: partner.partnersCategories.map((cat) => ({
         id: cat.id,
@@ -247,3 +247,24 @@ export const getPartnersForUsers = async () => {
     throw error;
   }
 }
+
+export const updatePartnerStatus = async (chatId, partnerId, data) => {
+  try {
+    const userInfo = await getUserInfo(chatId);
+
+    if (userInfo.user_admin && partnerId) {
+      // Если партнер существует, обновляем его данные
+      const checkPartner = await Partners.findByPk(partnerId);
+
+      if (checkPartner) {
+        // Обновляем статусы партнера
+        await checkPartner.update(data);
+
+        return { success: true, message: 'Обновление информации о партнере прошло успешно' };
+      }
+    }
+  } catch (err) {
+    console.error('Ошибка при добавлении/удалении партнера', err);
+    return { success: false, message: 'Ошибка при добавлении/удалении партнера' };
+  }
+};
