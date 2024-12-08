@@ -5,7 +5,11 @@ import {v4 as uuidv4} from "uuid";
 import fs from "fs";
 import path from "path";
 import {access, constants} from "fs/promises";
-import {createUserCar, getCarInfo, getUsersCars} from "../db/cars-methods.js";
+import {createUserCar, getCarInfo, getUsersCars, resizedRegImages} from "../db/cars-methods.js";
+import {Cars} from "../models.js";
+import resizeImage from "../functions/resizeImage.js";
+
+const adminId = process.env.ADMIN;
 
 const router = express.Router();
 
@@ -91,6 +95,11 @@ router.post("/get-users-cars", async (req, res) => {
 
 router.post("/upload", async (req, res) => {
   try {
+
+    const downloadType = req.body.downloadType;
+    const chat_id = req.body.chat_id;
+    const car_id = req.body.car_id;
+
     if (Object.values(req.files)[0].name) {
       const image = Object.values(req.files)[0];
       const format = image.name.split(".").pop();
@@ -118,7 +127,35 @@ router.post("/upload", async (req, res) => {
       await image.mv(filePath);
 
       const fileName = path.basename(filePath);
-      return res.json(fileName);
+
+      if (downloadType !== 'non-stop') {
+        return res.json(fileName);
+      } else {
+
+        if (chat_id && car_id) {
+          const carsDir = path.resolve("img/cars");
+          const tempDir = path.resolve("img/temp");
+
+          const compressImage = await resizeImage(filePath, carsDir, tempDir);
+
+          if (compressImage.optimizedFile) {
+
+            const car = await Cars.findByPk(car_id);
+
+            if (car) {
+              let imagesArr = JSON.parse(car.car_images);
+              imagesArr.push(compressImage.optimizedFile);
+
+              await car.update({car_images: JSON.stringify(imagesArr)});
+            }
+          }
+
+          return res.status(200).send();
+
+        }
+      }
+
+
 
       /*const data = await resizeImage(filePath, carsDir, tempDir);
       if (data.optimizedFile) {
@@ -135,6 +172,29 @@ router.post("/upload", async (req, res) => {
 router.post("/upload/remove", async (req, res) => {
   try {
     const imageFile = req.body.fileName;
+
+    const chat_id = req.body.data.chat_id;
+    const car_id = req.body.data.car_id;
+
+    if (chat_id && car_id) {
+      // const user = await getUserInfo(chat_id);
+      const pathFile = path.resolve('img/cars', imageFile);
+
+      await access(pathFile, constants.F_OK);
+
+      const car = await Cars.findByPk(car_id);
+
+      if (Number(car.chat_id) === Number(chat_id) || Number(chat_id) === Number(adminId)) {
+        let images = JSON.parse(car.car_images);
+        images.splice(images.indexOf(imageFile), 1);
+        await car.update({car_images: JSON.stringify(images)});
+
+        await deleteFile(pathFile);
+        return res.status(200).send(); // Отправляем пустой ответ с успешным статусом
+      }
+
+    }
+
     const pathFile = path.resolve('img/temp', imageFile);
 
     await access(pathFile, constants.F_OK);
@@ -146,6 +206,5 @@ router.post("/upload/remove", async (req, res) => {
     return res.status(500).send(err.message);
   }
 });
-
 
 export default router;

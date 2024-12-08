@@ -87,3 +87,11 @@ export const getUsersCars = async () => {
     console.error('Ошибка при получении всех автомобилей', err);
   }
 }
+
+export const updateUserCar = async (chat_id, car_id) => {
+  try {
+
+  } catch (err) {
+    console.error('Ошибка обновления данных об авто', err);
+  }
+}

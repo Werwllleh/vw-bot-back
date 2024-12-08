@@ -27,8 +27,6 @@ export const createUser = async (chatId, userName) => {
 }
 
 
-
-
 router.post("/create-user", async (req, res) => {
   try {
     const userData = req.body;
