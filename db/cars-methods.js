@@ -2,6 +2,7 @@ import {Users, Cars} from '../models.js';
 import path from "path";
 import fs from "fs";
 import resizeImage from "../functions/resizeImage.js";
+import {access, constants, unlink} from "fs/promises";
 
 //Фотки перемешаются в основную директорию только после успешной регистрации
 export const resizedRegImages = async (imagesArray) => {
@@ -90,6 +91,39 @@ export const getUsersCars = async () => {
 
 export const updateUserCar = async (chat_id, car_id) => {
   try {
+
+  } catch (err) {
+    console.error('Ошибка обновления данных об авто', err);
+  }
+}
+
+export const deleteUserCar = async (chatId, carId) => {
+  try {
+
+    const car = await Cars.findByPk(carId);
+
+    if (car && chatId === car.chat_id) {
+
+      const images = JSON.parse(car.car_images);
+
+      if (images.length > 0) {
+        images.map(async (image) => {
+          const imgPath = path.resolve('img/cars', image);
+
+          if (imgPath) {
+            await access(imgPath, constants.F_OK, async (err) => {
+              if (!err) {
+                await unlink(imgPath)
+              }
+            });
+          }
+
+        })
+      }
+
+      await car.destroy();
+
+    }
 
   } catch (err) {
     console.error('Ошибка обновления данных об авто', err);

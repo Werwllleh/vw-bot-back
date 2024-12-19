@@ -5,7 +5,7 @@ import {v4 as uuidv4} from "uuid";
 import fs from "fs";
 import path from "path";
 import {access, constants} from "fs/promises";
-import {createUserCar, getCarInfo, getUsersCars, resizedRegImages} from "../db/cars-methods.js";
+import {createUserCar, deleteUserCar, getCarInfo, getUsersCars, resizedRegImages} from "../db/cars-methods.js";
 import {Cars} from "../models.js";
 import resizeImage from "../functions/resizeImage.js";
 
@@ -50,6 +50,27 @@ router.post("/add-car", async (req, res) => {
         })
         .catch(() => {
           return res.status(500).send("Ошибка при добавлении авто")
+        })
+    }
+
+
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+});
+
+router.post("/delete-car", async (req, res) => {
+  try {
+    const chatId = req.body.chatId;
+    const carId = req.body.carId;
+
+    if (chatId && carId) {
+      await deleteUserCar(chatId, carId)
+        .then(() => {
+          return res.status(200).send("OK")
+        })
+        .catch(() => {
+          return res.status(500).send("Ошибка при удалении авто")
         })
     }
 
