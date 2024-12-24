@@ -18,28 +18,11 @@ export const keyBoard = {
     reply_markup: {
       keyboard: [
         [
-          {text: "Ближайшая встреча"},
           {
-            text: "Партнеры",
-            web_app: {url: webAppUrl + "/partners"},
-            request_location: true
+            text: "Открыть приложение",
+            web_app: {url: webAppUrl},
+            // request_location: true
           },
-        ],
-        [
-          {
-            text: "Профиль",
-            web_app: {url: webAppUrl + "/profile"},
-            request_location: true
-          },
-          {text: "Регистрация"}
-        ],
-      ],
-    },
-  },
-  partners: {
-    reply_markup: {
-      keyboard: [
-        [
           {
             text: "Партнеры",
             web_app: {url: webAppUrl + "/partners"},
@@ -47,15 +30,30 @@ export const keyBoard = {
           },
         ],
       ],
-      /*inline_keyboard: [
+    },
+  },
+  partners: {
+    reply_markup: {
+      /*keyboard: [
         [
           {
-            text: "Список партнеров",
-            web_app: { url: webAppUrl + "/partners" },
-            request_location:true
+            text: "Партнеры",
+            web_app: {url: webAppUrl + "/partners"},
+            // request_location: true
           },
         ],
       ],*/
+      keyboard: [
+      ],
+      inline_keyboard: [
+        [
+          {
+            text: "Партнеры",
+            web_app: {url: webAppUrl + "/partners"},
+            // request_location:true
+          },
+        ],
+      ],
     },
   },
   reg: {

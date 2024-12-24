@@ -1,11 +1,8 @@
 import express from "express";
 import logger from "../functions/logger.js";
-import {Cars, Users} from "../models.js";
+import {Users} from "../models.js";
 import {getAllUsers, getUserInfo} from "../db/user-methods.js";
 import {getRandomColor} from "../functions/randomColor.js";
-import resizeImage from "../functions/resizeImage.js";
-import path from "path";
-import fs from "fs";
 
 const adminId = process.env.ADMIN;
 
@@ -19,7 +16,7 @@ export const createUser = async (chatId, userName) => {
       chat_id: chatId,
       user_name: userName.trim(),
       user_color: getRandomColor(),
-      user_admin: Number(chatId) === Number(adminId),
+      user_admin: String(chatId) === String(adminId),
     });
   } catch (error) {
     console.error('Ошибка при создании пользователя', error);

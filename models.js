@@ -7,6 +7,7 @@ export const Users = sequelize.define('users', {
   user_name: {type: DataTypes.STRING, allowNull: false},
   user_color: {type: DataTypes.STRING, allowNull: false},
   user_admin: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+  user_banned: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
 }, {
   timestamps: true
 });
