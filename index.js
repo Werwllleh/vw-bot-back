@@ -1,5 +1,6 @@
 import 'dotenv/config';
-import {Bot} from "grammy";
+// import {Bot} from "grammy";
+import TelegramBot from 'node-telegram-bot-api';
 import express from 'express';
 import cors from 'cors';
 import dbConnect from './functions/dbConnect.js';
@@ -21,23 +22,31 @@ process.env["NTBA_FIX_350"] = 1;
 
 const app = express();
 
-const bot = new Bot(token);
-
-app.use(express.json());
-app.use(fileUpload());
+// const bot = new Bot(token);
+const bot = new TelegramBot(token, {polling: true});
 
 const allowedOrigins = ['https://vagclub21.ru', 'https://bot.vagclub21.ru', 'https://cms.vagclub21.ru'];
-app.use(cors({
-  origin: function (origin, callback) {
-    if (allowedOrigins.includes(origin) || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Разрешенные HTTP-методы
-  allowedHeaders: ['Content-Type', 'Authorization'] // Разрешенные заголовки
-}));
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  console.log(`Request origin: ${origin}`); // Логируем origin для диагностики
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    console.log(`CORS allowed for origin: ${origin}`); // Логируем успешное добавление заголовка
+  } else {
+    console.log(`CORS denied for origin: ${origin}`); // Логируем отклонение
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204); // Возвращаем preflight-ответ
+  }
+  next();
+});
+
+app.use(express.json());
+
+app.use(fileUpload({}));
 
 app.listen(port, () => console.log(`App is listening on port ${port}.`));
 
@@ -52,7 +61,7 @@ app.use("/api", carsRouter);
 app.use("/api", userRouter);
 app.use("/api", partnersRouter);
 
-const start = async () => {
+/*const start = async () => {
   await dbConnect(); // Подключаем базу данных
 
   await bot.api.setMyCommands([
@@ -81,27 +90,24 @@ const start = async () => {
 
       if (userData) {
         if (message.toLowerCase() === "/start") {
-          return await bot.api.sendMessage(chatId, 'Ознакомиться с клубными партнерами можно тут', keyBoard.partners);
+          return await bot.api.sendMessage(chatId, 'Ознакомиться с клубными партнерами можно тут', {reply_markup: keyboardOpen});
         }
         if (message.toLowerCase() === "/partners") {
-          return await bot.api.sendMessage(chatId, 'Ознакомиться с клубными партнерами можно тут', keyBoard.partners);
+          return await bot.api.sendMessage(chatId, 'Ознакомиться с клубными партнерами можно тут', {reply_markup: keyboardOpen});
         }
       } else {
-        return await bot.api.sendMessage(chatId, 'Привет! Пожалуйста пройди регистрацию для полноценного использования', keyBoard.reg);
+        return await bot.api.sendMessage(
+          chatId,
+          'Привет! Пожалуйста пройди регистрацию для полноценного использования',
+          {reply_markup: keyboardReg});
       }
-
-
-      /*if (message.toLowerCase() === "/партнеры") {
-        return bot.api.sendMessage(chatId, 'Партнеры тут', keyBoard.partners);
-      }*/
-
     } catch (err) {
       logger("Не отработал сценарий бота", err);
       console.log(err);
     }
 
 
-    /*const text = msg.text;
+    /!*const text = msg.text;
     const chatId = msg.chat.id;
 
     try {
@@ -121,13 +127,55 @@ const start = async () => {
     } catch (err) {
       logger("Не отработал сценарий бота", err);
       console.log(err);
-    }*/
+    }*!/
 
 
   });
 
   bot.start();
-};
+};*/
 
+const start = async () => {
+  await dbConnect(); // Подключаем базу данных
+
+  await bot.setMyCommands([
+    {command: "/info", description: "О клубе"},
+    {command: "/go", description: "Тест функция"},
+    {command: "/start", description: "Обновление/перезапуск бота"}
+  ])
+
+  await bot.on("message", async (msg) => {
+
+    try {
+
+      const text = msg.text;
+      const chatId = msg.chat.id;
+
+      if (String(chatId) !== String(adminId)) {
+        return await bot.sendMessage(chatId, "Привет! Бот уже совсем скоро заработает, еще чуть-чуть");
+      }
+
+      const userData = await getUserInfo(chatId);
+
+      if (userData) {
+        if (text.toLowerCase() === "/start") {
+          return await bot.sendMessage(chatId, 'Привет!', keyBoard.menu);
+        }
+        if (text.toLowerCase() === "/info") {
+          return await bot.sendMessage(chatId, 'О клубе', keyBoard.menu);
+        }
+        if (text.toLowerCase() === "/partners") {
+          return await bot.sendMessage(chatId, 'Ознакомиться с клубными партнерами можно тут', keyBoard.partners);
+        }
+      } else {
+        return await bot.sendMessage(chatId, 'Привет! Пожалуйста пройди регистрацию для полноценного использования', keyBoard.reg);
+      }
+
+    } catch (err) {
+      logger("Не отработал сценарий бота", err);
+      console.log(err);
+    }
+  })
+}
 
 start();

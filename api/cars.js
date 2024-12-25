@@ -177,7 +177,6 @@ router.post("/upload", async (req, res) => {
       }
 
 
-
       /*const data = await resizeImage(filePath, carsDir, tempDir);
       if (data.optimizedFile) {
         return res.json(data.optimizedFile);
@@ -192,40 +191,42 @@ router.post("/upload", async (req, res) => {
 
 router.post("/upload/remove", async (req, res) => {
   try {
+
     const imageFile = req.body.fileName;
 
-    const chat_id = req.body.data.chat_id;
-    const car_id = req.body.data.car_id;
+    const chat_id = req.body?.data?.chat_id;
+    const car_id = req.body?.data?.car_id;
 
     if (chat_id && car_id) {
       // const user = await getUserInfo(chat_id);
       const pathFile = path.resolve('img/cars', imageFile);
 
-      await access(pathFile, constants.F_OK);
+      await access(pathFile, constants.F_OK, async (err) => {
+        if (!err) {
+          const car = await Cars.findByPk(car_id);
 
-      const car = await Cars.findByPk(car_id);
+          if (Number(car.chat_id) === Number(chat_id) || Number(chat_id) === Number(adminId)) {
+            let images = JSON.parse(car.car_images);
+            images.splice(images.indexOf(imageFile), 1);
+            await car.update({car_images: JSON.stringify(images)});
 
-      if (Number(car.chat_id) === Number(chat_id) || Number(chat_id) === Number(adminId)) {
-        let images = JSON.parse(car.car_images);
-        images.splice(images.indexOf(imageFile), 1);
-        await car.update({car_images: JSON.stringify(images)});
+            await deleteFile(pathFile);
+            return res.status(200).send(); // Отправляем пустой ответ с успешным статусом
+          }
+        }
+      });
+    } else {
+      const pathFile = path.resolve('img/temp', imageFile);
+      await deleteFile(pathFile);
 
-        await deleteFile(pathFile);
-        return res.status(200).send(); // Отправляем пустой ответ с успешным статусом
-      }
-
+      return res.status(200).send(); // Отправляем пустой ответ с успешным статусом
     }
 
-    const pathFile = path.resolve('img/temp', imageFile);
-
-    await access(pathFile, constants.F_OK);
-    await deleteFile(pathFile);
-
-    return res.status(200).send(); // Отправляем пустой ответ с успешным статусом
   } catch (err) {
     logger("Ошибка удаления изображения", err);
     return res.status(500).send(err.message);
   }
 });
+
 
 export default router;
