@@ -1,7 +1,5 @@
 import 'dotenv/config';
-// import TelegramBot from 'node-telegram-bot-api';
-// const { Bot } = require("grammy");
-import { Bot } from "grammy";
+import {Bot} from "grammy";
 import express from 'express';
 import cors from 'cors';
 import dbConnect from './functions/dbConnect.js';
@@ -22,12 +20,24 @@ const port = process.env.PORT;
 process.env["NTBA_FIX_350"] = 1;
 
 const app = express();
-// const bot = new TelegramBot(token, { polling: true });
+
 const bot = new Bot(token);
 
 app.use(express.json());
 app.use(fileUpload());
-app.use(cors());
+
+const allowedOrigins = ['https://vagclub21.ru', 'https://bot.vagclub21.ru', 'https://cms.vagclub21.ru'];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Разрешенные HTTP-методы
+  allowedHeaders: ['Content-Type', 'Authorization'] // Разрешенные заголовки
+}));
 
 app.listen(port, () => console.log(`App is listening on port ${port}.`));
 
@@ -46,9 +56,9 @@ const start = async () => {
   await dbConnect(); // Подключаем базу данных
 
   await bot.api.setMyCommands([
-    { command: "start", description: "Обновление/перезапуск бота" },
-    { command: "info", description: "О клубе" },
-    { command: "partners", description: "Партнеры" },
+    {command: "start", description: "Обновление/перезапуск бота"},
+    {command: "info", description: "О клубе"},
+    {command: "partners", description: "Партнеры"},
   ]);
 
   bot.command(
@@ -89,7 +99,6 @@ const start = async () => {
       logger("Не отработал сценарий бота", err);
       console.log(err);
     }
-
 
 
     /*const text = msg.text;
