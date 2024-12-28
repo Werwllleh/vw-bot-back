@@ -4,7 +4,6 @@ import logger from "../functions/logger.js";
 import {v4 as uuidv4} from "uuid";
 import fs from "fs";
 import path from "path";
-import {access, constants} from "fs/promises";
 import {createUserCar, deleteUserCar, getCarInfo, getUsersCars, resizedRegImages} from "../db/cars-methods.js";
 import {Cars} from "../models.js";
 import resizeImage from "../functions/resizeImage.js";
@@ -197,24 +196,22 @@ router.post("/upload/remove", async (req, res) => {
     const chat_id = req.body?.data?.chat_id;
     const car_id = req.body?.data?.car_id;
 
+
     if (chat_id && car_id) {
       // const user = await getUserInfo(chat_id);
       const pathFile = path.resolve('img/cars', imageFile);
 
-      await access(pathFile, constants.F_OK, async (err) => {
-        if (!err) {
-          const car = await Cars.findByPk(car_id);
+      const car = await Cars.findByPk(car_id);
 
-          if (Number(car.chat_id) === Number(chat_id) || Number(chat_id) === Number(adminId)) {
-            let images = JSON.parse(car.car_images);
-            images.splice(images.indexOf(imageFile), 1);
-            await car.update({car_images: JSON.stringify(images)});
+      if (Number(car.chat_id) === Number(chat_id) || Number(chat_id) === Number(adminId)) {
+        let images = JSON.parse(car.car_images);
+        images.splice(images.indexOf(imageFile), 1);
+        await car.update({car_images: JSON.stringify(images)});
 
-            await deleteFile(pathFile);
-            return res.status(200).send(); // Отправляем пустой ответ с успешным статусом
-          }
-        }
-      });
+        await deleteFile(pathFile);
+
+        return res.status(200).send();
+      }
     } else {
       const pathFile = path.resolve('img/temp', imageFile);
       await deleteFile(pathFile);

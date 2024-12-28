@@ -18,6 +18,11 @@ export const keyBoard = {
             web_app: {url: webAppUrl + "/partners"},
             // request_location: true
           },
+          {
+            text: "Встреча клуба",
+            web_app: {url: webAppUrl + "/meet"},
+            // request_location:true
+          },
         ],
       ],
     },
@@ -29,6 +34,19 @@ export const keyBoard = {
           {
             text: "Партнеры",
             web_app: {url: webAppUrl + "/partners"},
+            // request_location:true
+          },
+        ],
+      ],
+    },
+  },
+  meet: {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "Встреча клуба",
+            web_app: {url: webAppUrl + "/meet"},
             // request_location:true
           },
         ],

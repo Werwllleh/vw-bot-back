@@ -16,3 +16,4 @@ const connectDB =  new Sequelize(
 );
 
 export default connectDB;
+

@@ -15,7 +15,7 @@ import {keyBoard} from "./keyboards.js";
 import {getUserInfo} from "./db/user-methods.js";
 
 const adminId = process.env.ADMIN;
-const token = process.env.TOKEN_TEST;
+const token = process.env.TOKEN;
 const port = process.env.PORT;
 
 process.env["NTBA_FIX_350"] = 1;
@@ -25,7 +25,7 @@ const app = express();
 // const bot = new Bot(token);
 const bot = new TelegramBot(token, {polling: true});
 
-const allowedOrigins = ['https://vagclub21.ru', 'https://bot.vagclub21.ru', 'https://cms.vagclub21.ru'];
+const allowedOrigins = ['https://vagclub21.ru', 'https://bot.vagclub21.ru', 'https://cms.vagclub21.ru', 'http://localhost:3000'];
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
@@ -139,9 +139,10 @@ const start = async () => {
   await dbConnect(); // Подключаем базу данных
 
   await bot.setMyCommands([
-    {command: "/info", description: "О клубе"},
+    {command: "/start", description: "Обновление/перезапуск бота"},
+    // {command: "/info", description: "О клубе"},
     {command: "/partners", description: "Партнеры"},
-    {command: "/start", description: "Обновление/перезапуск бота"}
+    {command: "/meet", description: "Встреча клуба"},
   ])
 
   await bot.on("message", async (msg) => {
@@ -161,11 +162,14 @@ const start = async () => {
         if (text.toLowerCase() === "/start") {
           return await bot.sendMessage(chatId, 'Привет!', keyBoard.menu);
         }
-        if (text.toLowerCase() === "/info") {
+        /*if (text.toLowerCase() === "/info") {
           return await bot.sendMessage(chatId, 'О клубе', keyBoard.menu);
-        }
+        }*/
         if (text.toLowerCase() === "/partners") {
           return await bot.sendMessage(chatId, 'Ознакомиться с клубными партнерами можно тут', keyBoard.partners);
+        }
+        if (text.toLowerCase() === "/meet") {
+          return await bot.sendMessage(chatId, 'Узнать информацию о встрече клуба', keyBoard.meet);
         }
       } else {
         return await bot.sendMessage(chatId, 'Привет! Пожалуйста пройди регистрацию для полноценного использования', keyBoard.reg);
