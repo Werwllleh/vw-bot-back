@@ -140,7 +140,7 @@ const start = async () => {
 
   await bot.setMyCommands([
     {command: "/info", description: "О клубе"},
-    {command: "/go", description: "Тест функция"},
+    {command: "/partners", description: "Партнеры"},
     {command: "/start", description: "Обновление/перезапуск бота"}
   ])
 
