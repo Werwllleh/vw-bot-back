@@ -1,12 +1,10 @@
+import {bot} from "../index.js";
 
 
-export const sendIndividualMessage = (bot, chatId, text, photo) => {
+export const sendIndividualMessage = (chatId, text) => {
   try {
-    if (photo) {
-      bot.sendPhoto(chatId, photo);
-    }
     return bot.sendMessage(chatId, text);
   } catch (error) {
-    return bot.sendMessage(446012794, error);
+    return bot.sendMessage(process.env.ADMIN, error);
   }
 }

@@ -23,7 +23,7 @@ process.env["NTBA_FIX_350"] = 1;
 const app = express();
 
 // const bot = new Bot(token);
-const bot = new TelegramBot(token, {polling: true});
+export const bot = new TelegramBot(token, {polling: true});
 
 const allowedOrigins = ['https://vagclub21.ru', 'https://bot.vagclub21.ru', 'https://cms.vagclub21.ru'];
 

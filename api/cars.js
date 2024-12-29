@@ -7,6 +7,7 @@ import path from "path";
 import {createUserCar, deleteUserCar, getCarInfo, getUsersCars, resizedRegImages} from "../db/cars-methods.js";
 import {Cars} from "../models.js";
 import resizeImage from "../functions/resizeImage.js";
+import {sendIndividualMessage} from "../functions/sendIndividualMessage.js";
 
 const adminId = process.env.ADMIN;
 
@@ -45,6 +46,7 @@ router.post("/add-car", async (req, res) => {
     if (chatId && carData) {
       await createUserCar(chatId, carData)
         .then(() => {
+          sendIndividualMessage(process.env.ADMIN, 'Новый пользователь')
           return res.status(200).send("OK")
         })
         .catch(() => {
