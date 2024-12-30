@@ -152,9 +152,9 @@ const start = async () => {
       const text = msg.text;
       const chatId = msg.chat.id;
 
-      if (String(chatId) !== String(adminId)) {
+      /*if (String(chatId) !== String(adminId)) {
         return await bot.sendMessage(chatId, "Привет! Бот уже совсем скоро заработает, еще чуть-чуть");
-      }
+      }*/
 
       const userData = await getUserInfo(chatId);
 
