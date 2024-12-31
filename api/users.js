@@ -1,7 +1,7 @@
 import express from "express";
 import logger from "../functions/logger.js";
 import {Users} from "../models.js";
-import {getAllUsers, getUserInfo} from "../db/user-methods.js";
+import {getAllUsers, getUserInfo, sendUserMessage} from "../db/user-methods.js";
 import {getRandomColor} from "../functions/randomColor.js";
 
 const adminId = process.env.ADMIN;
@@ -93,6 +93,18 @@ router.post("/about-user", async (req, res) => {
 router.post("/all-users", async (req, res) => {
   try {
     const data = await getAllUsers();
+    return res.status(200).send(data);
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+})
+
+router.post("/send-message", async (req, res) => {
+  try {
+    const chatId = req.body.chatId;
+    const message = req.body.message;
+
+    const data = await sendUserMessage(chatId, message);
     return res.status(200).send(data);
   } catch (err) {
     return res.status(500).send(err);

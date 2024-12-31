@@ -1,4 +1,6 @@
 import {Users, Cars} from '../models.js';
+import {sendIndividualMessage} from "../functions/sendIndividualMessage.js";
+import logger from "../functions/logger.js";
 
 export const getUserInfo = async (chatId) => {
   try {
@@ -46,5 +48,14 @@ export const getAllUsers = async () => {
 
   } catch (err) {
     console.error('Ошибка при получении всех пользователей', err);
+  }
+}
+
+export const sendUserMessage = async (chat_id, message) => {
+  try {
+    return await sendIndividualMessage(chat_id, message);
+  } catch (err) {
+    logger('Ошибка отправки индивидуального сообщения', err)
+    console.error('Ошибка отправки индивидуального сообщения', err)
   }
 }

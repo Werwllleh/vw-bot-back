@@ -1,10 +1,10 @@
 import {bot} from "../index.js";
 
 
-export const sendIndividualMessage = (chatId, text) => {
+export const sendIndividualMessage = async (chatId, text) => {
   try {
-    return bot.sendMessage(chatId, text);
+    return await bot.sendMessage(chatId, text);
   } catch (error) {
-    return bot.sendMessage(process.env.ADMIN, error);
+    return await bot.sendMessage(process.env.ADMIN, error);
   }
 }
