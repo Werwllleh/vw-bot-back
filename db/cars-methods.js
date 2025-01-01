@@ -80,6 +80,9 @@ export const getUsersCars = async () => {
   try {
     const carsData = await Cars.findAll({
       include: Users, // Включая владельца авто
+      order: [
+        ['createdAt', 'DESC'],
+      ]
     });
 
     return carsData;
