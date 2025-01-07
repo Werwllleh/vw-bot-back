@@ -12,12 +12,17 @@ const resizeImage = async (filePath, originalDir, tempDir) => {
 
     await access(filePath, constants.F_OK);
 
+    /*const metadata = await sharp(filePath).metadata();
+    console.log(metadata);*/
+
     await sharp(filePath)
+      .rotate() // Автоматически корректирует ориентацию изображения на основе данных Exif
       .resize(1000, 1000, {
         fit: 'inside',
         withoutEnlargement: true
       })
       .webp({quality: 50})
+      .withMetadata()
       .toFile(path.resolve(tempDir, optimizedFileName))
 
     await copyFile(path.resolve(tempDir, optimizedFileName), path.resolve(originalDir, optimizedFileName))

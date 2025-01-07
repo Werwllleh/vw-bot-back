@@ -46,7 +46,7 @@ router.post("/add-car", async (req, res) => {
     if (chatId && carData) {
       await createUserCar(chatId, carData)
         .then(() => {
-          sendIndividualMessage(process.env.ADMIN, 'Новый пользователь')
+          sendIndividualMessage(process.env.ADMIN, `Новый авто: ${carData?.brand} ${carData?.model} - ${carData?.carNumber.trim().toUpperCase()} `)
           return res.status(200).send("OK")
         })
         .catch(() => {
