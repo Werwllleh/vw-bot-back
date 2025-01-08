@@ -92,8 +92,39 @@ export const getUsersCars = async () => {
   }
 }
 
-export const updateUserCar = async (chat_id, car_id) => {
+export const updateUserCar = async (chat_id, car_id, car_data) => {
   try {
+    const car = await Cars.findByPk(car_id);
+
+    if (car && String(car.chat_id) === String(chat_id) || car && chat_id === process.env.ADMIN) {
+
+      if (car_data.carYear !== car.car_year) {
+        await car.update({car_year: car_data.carYear});
+      }
+      if (car_data.carNote !== car.car_note) {
+        await car.update({car_note: car_data.carNote});
+      }
+
+      const checkCar = await getCarInfo(car_data.carNumber);
+
+      if (String(checkCar.chat_id) === String(chat_id)) {
+        if (car_data.carNumber !== car.car_number) {
+          await car.update({car_number: car_data.carNumber});
+        }
+      } else {
+        return {
+          status: 203,
+          text: 'Данный номер зарегистрирован'
+        };
+      }
+
+
+      return {
+        status: 200,
+        text: 'Данные авто обновлены'
+      };
+
+    }
 
   } catch (err) {
     console.error('Ошибка обновления данных об авто', err);

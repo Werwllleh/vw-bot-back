@@ -4,7 +4,14 @@ import logger from "../functions/logger.js";
 import {v4 as uuidv4} from "uuid";
 import fs from "fs";
 import path from "path";
-import {createUserCar, deleteUserCar, getCarInfo, getUsersCars, resizedRegImages} from "../db/cars-methods.js";
+import {
+  createUserCar,
+  deleteUserCar,
+  getCarInfo,
+  getUsersCars,
+  resizedRegImages,
+  updateUserCar
+} from "../db/cars-methods.js";
 import {Cars} from "../models.js";
 import resizeImage from "../functions/resizeImage.js";
 import {sendIndividualMessage} from "../functions/sendIndividualMessage.js";
@@ -227,5 +234,22 @@ router.post("/upload/remove", async (req, res) => {
   }
 });
 
+router.post("/change-car-data", async (req, res) => {
+  try {
+    const chatId = req.body.chatId;
+    const carId = req.body.carId;
+    const carData = req.body.data;
+
+    if (chatId && carId && carData) {
+      const updateCarStatus = await updateUserCar(chatId, carId, carData);
+
+      res.status(updateCarStatus.status).send(updateCarStatus.text);
+    }
+
+
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+});
 
 export default router;
