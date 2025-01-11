@@ -98,6 +98,12 @@ export const updateUserCar = async (chat_id, car_id, car_data) => {
 
     if (car && String(car.chat_id) === String(chat_id) || car && chat_id === process.env.ADMIN) {
 
+      if (car_data.carBrand !== car.car_brand) {
+        await car.update({car_brand: car_data.carBrand});
+      }
+      if (car_data.carModel !== car.car_model) {
+        await car.update({car_model: car_data.carModel});
+      }
       if (car_data.carYear !== car.car_year) {
         await car.update({car_year: car_data.carYear});
       }
