@@ -1,7 +1,7 @@
 import express from "express";
 import logger from "../functions/logger.js";
 import {Users} from "../models.js";
-import {getAllUsers, getUserInfo, sendUserMessage} from "../db/user-methods.js";
+import {getAllUsers, getUserInfo, sendUserMessage, updateUserInfo} from "../db/user-methods.js";
 import {getRandomColor} from "../functions/randomColor.js";
 
 const adminId = process.env.ADMIN;
@@ -76,6 +76,26 @@ router.post("/create-user", async (req, res) => {
   } catch (err) {
     console.log('Ошибка при создании пользователя - ' + err);
     logger('Ошибка при создании пользователя', err);
+    return res.status(500).send(err);
+  }
+})
+
+router.post("/update-user", async (req, res) => {
+  try {
+    const userData = req.body;
+
+    const userChatId = userData.chat_id;
+    const userValues = userData.data;
+
+    const update = await updateUserInfo(userChatId, userValues);
+
+    console.log(update)
+
+    return res.status(update.status).send(update.text);
+
+  } catch (err) {
+    console.log('Ошибка обновления данных пользователя - ' + err);
+    logger('Ошибка обновления данных пользователя', err);
     return res.status(500).send(err);
   }
 })

@@ -105,13 +105,13 @@ export const updateUserCar = async (chat_id, car_id, car_data) => {
         await car.update({car_model: car_data.carModel});
       }
       if (car_data.carYear !== car.car_year) {
-        await car.update({car_year: car_data.carYear});
+        await car.update({car_year: car_data.carYear.trim()});
       }
       if (car_data.carNote !== car.car_note) {
-        await car.update({car_note: car_data.carNote});
+        await car.update({car_note: car_data.carNote.trim()});
       }
       if (car_data.carDrive2 !== car.car_drive2) {
-        await car.update({car_drive2: car_data.carDrive2});
+        await car.update({car_drive2: car_data.carDrive2.trim()});
       }
 
       const checkCar = await getCarInfo(car_data.carNumber);

@@ -5,6 +5,7 @@ export const Users = sequelize.define('users', {
   id: {type: DataTypes.INTEGER, primaryKey: true, unique: true, autoIncrement: true},
   chat_id: {type: DataTypes.BIGINT, unique: true},
   user_name: {type: DataTypes.STRING, allowNull: false},
+  user_instagram: {type: DataTypes.STRING},
   user_color: {type: DataTypes.STRING, allowNull: false},
   user_admin: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
   user_banned: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},

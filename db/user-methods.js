@@ -17,6 +17,8 @@ export const getUserInfo = async (chatId) => {
         id: userData.id,
         chat_id: userData.chat_id,
         user_name: userData.user_name,
+        user_telegram: userData.user_telegram,
+        user_instagram: userData.user_instagram,
         user_color: userData.user_color,
         user_admin: userData.user_admin,
         cars: userData?.cars.length && userData?.cars.map((car) => ({
@@ -37,6 +39,46 @@ export const getUserInfo = async (chatId) => {
     console.error('Ошибка при получении инфо пользователя', err);
   }
 }
+
+export const updateUserInfo = async (chatId, values) => {
+  try {
+    const user = await Users.findOne({ where: { chat_id: chatId } });
+
+    if (!user || (String(user.chat_id) !== String(chatId) && chatId !== process.env.ADMIN)) {
+      return {
+        status: 403,
+        text: 'Доступ запрещен',
+      };
+    }
+
+    const updates = {};
+
+    if (user.user_name !== values.userName) {
+      updates.user_name = values.userName.trim();
+    }
+    if (user.user_instagram !== values.userInstagram.replace(/^@/, "").trim()) {
+      updates.user_instagram = values.userInstagram.replace(/^@/, "").trim();
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await user.update(updates);
+      return {
+        status: 200,
+        text: 'Данные пользователя обновлены',
+      };
+    }
+
+    return {
+      status: 200,
+      text: 'Изменений нет',
+    };
+  } catch (err) {
+    return {
+      status: 500,
+      text: 'Ошибка обновления данных пользователя',
+    };
+  }
+};
 
 export const getAllUsers = async () => {
   try {
