@@ -56,7 +56,7 @@ export const updateUserInfo = async (chatId, values) => {
     if (user.user_name !== values.userName) {
       updates.user_name = values.userName.trim();
     }
-    if (user.user_instagram !== values.userInstagram.replace(/^@/, "").trim()) {
+    if (values.userInstagram !== '' && user.user_instagram !== values.userInstagram.replace(/^@/, "").trim()) {
       updates.user_instagram = values.userInstagram.replace(/^@/, "").trim();
     }
 
