@@ -25,7 +25,7 @@ const app = express();
 // const bot = new Bot(token);
 export const bot = new TelegramBot(token, {polling: true});
 
-const allowedOrigins = ['https://vagclub21.ru', 'https://bot.vagclub21.ru', 'https://cms.vagclub21.ru', 'http://localhost:3002'];
+const allowedOrigins = ['https://vagclub21.ru', 'https://bot.vagclub21.ru', 'https://cms.vagclub21.ru'];
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;

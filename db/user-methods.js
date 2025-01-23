@@ -26,6 +26,7 @@ export const getUserInfo = async (chatId) => {
           car_year: car.car_year,
           car_number: car.car_number,
           car_note: car.car_note,
+          car_drive2: car.car_drive2,
           car_images: JSON.parse(car.car_images)
         }))
       }

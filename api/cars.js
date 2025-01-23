@@ -9,7 +9,6 @@ import {
   deleteUserCar,
   getCarInfo,
   getUsersCars,
-  resizedRegImages,
   updateUserCar
 } from "../db/cars-methods.js";
 import {Cars} from "../models.js";
