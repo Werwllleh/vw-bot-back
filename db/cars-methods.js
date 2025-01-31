@@ -116,17 +116,14 @@ export const updateUserCar = async (chat_id, car_id, car_data) => {
 
       const checkCar = await getCarInfo(car_data.carNumber);
 
-      if (String(checkCar.chat_id) === String(chat_id)) {
-        if (car_data.carNumber !== car.car_number) {
-          await car.update({car_number: car_data.carNumber});
-        }
+      if (car_data.carNumber !== car.car_number && String(checkCar.chat_id) === String(chat_id)) {
+        await car.update({car_number: car_data.carNumber.trim()});
       } else {
         return {
           status: 203,
           text: 'Данный номер зарегистрирован'
         };
       }
-
 
       return {
         status: 200,
