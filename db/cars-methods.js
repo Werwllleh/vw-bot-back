@@ -98,6 +98,20 @@ export const updateUserCar = async (chat_id, car_id, car_data) => {
 
     if (car && String(car.chat_id) === String(chat_id) || car && chat_id === process.env.ADMIN) {
 
+      if (car_data.carNumber !== car.car_number) {
+        const checkCar = await getCarInfo(car_data.carNumber);
+        console.log(checkCar)
+
+        if (!checkCar) {
+          await car.update({car_number: car_data.carNumber.trim()});
+        } else {
+          return {
+            status: 203,
+            text: 'Данный номер зарегистрирован'
+          };
+        }
+      }
+
       if (car_data.carBrand !== car.car_brand) {
         await car.update({car_brand: car_data.carBrand});
       }
@@ -112,17 +126,6 @@ export const updateUserCar = async (chat_id, car_id, car_data) => {
       }
       if (car_data.carDrive2 !== car.car_drive2) {
         await car.update({car_drive2: car_data.carDrive2.trim()});
-      }
-
-      const checkCar = await getCarInfo(car_data.carNumber);
-
-      if (car_data.carNumber !== car.car_number && String(checkCar.chat_id) === String(chat_id)) {
-        await car.update({car_number: car_data.carNumber.trim()});
-      } else {
-        return {
-          status: 203,
-          text: 'Данный номер зарегистрирован'
-        };
       }
 
       return {
