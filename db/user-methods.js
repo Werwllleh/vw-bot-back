@@ -94,6 +94,39 @@ export const getAllUsers = async () => {
   }
 }
 
+export const deleteUser = async (chatId) => {
+  try {
+    const userData = await Users.findOne({
+      where: {chat_id: chatId},
+      include: Cars,
+    });
+
+
+    console.log(userData)
+
+    if (!userData) {
+      console.log(`Пользователь с chatId ${chatId} не найден.`);
+      return;
+    }
+
+    // Удаляем пользователя
+    await Users.destroy({
+      where: { chat_id: chatId },
+    });
+
+    if (!!userData.cars.length) {
+      // Удаляем связанные записи в таблице Cars
+      await Cars.destroy({
+        where: { chat_id: chatId }, // Фильтруем по user_id
+      });
+    }
+
+  } catch (err) {
+    logger('Ошибка удаления пользователя', err)
+    console.error('Ошибка удаления пользователя', err)
+  }
+}
+
 export const sendUserMessage = async (chat_id, message) => {
   try {
     return await sendIndividualMessage(chat_id, message);

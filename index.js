@@ -153,8 +153,11 @@ const start = async () => {
 
     try {
 
+
       const text = msg.text;
       const chatId = msg.chat.id;
+
+      console.log('Пользователь - ' + chatId)
 
       /*if (String(chatId) !== String(adminId)) {
         return await bot.sendMessage(chatId, "Привет! Бот уже совсем скоро заработает, еще чуть-чуть");
