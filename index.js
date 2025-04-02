@@ -157,8 +157,6 @@ const start = async () => {
       const text = msg.text;
       const chatId = msg.chat.id;
 
-      console.log('Пользователь - ' + chatId)
-
       /*if (String(chatId) !== String(adminId)) {
         return await bot.sendMessage(chatId, "Привет! Бот уже совсем скоро заработает, еще чуть-чуть");
       }*/
@@ -168,6 +166,10 @@ const start = async () => {
       if (userData) {
         if (text.toLowerCase() === "/start") {
           return await bot.sendMessage(chatId, 'Привет!', keyBoard.menu);
+        }
+        if (text.toLowerCase() === "/status") {
+          logger('Статус пользователя', JSON.stringify(msg))
+          return await bot.sendMessage(chatId, 'Спасибо, информация передана!');
         }
         /*if (text.toLowerCase() === "/info") {
           return await bot.sendMessage(chatId, 'О клубе', keyBoard.menu);
