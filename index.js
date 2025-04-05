@@ -27,6 +27,7 @@ export const bot = new TelegramBot(token, {polling: true});
 
 const allowedOrigins = [
   process.env.URL_FRONT,
+  process.env.URL_FRONT_QA,
   process.env.URL_BOT,
   process.env.URL_CMS,
 ];
@@ -161,16 +162,18 @@ const start = async () => {
         return await bot.sendMessage(chatId, "Привет! Бот уже совсем скоро заработает, еще чуть-чуть");
       }*/
 
+      if (text.toLowerCase() === "/status") {
+        logger('Статус пользователя', JSON.stringify(msg))
+        return await bot.sendMessage(chatId, 'Спасибо, информация передана!');
+      }
+
       const userData = await getUserInfo(chatId);
 
       if (userData) {
         if (text.toLowerCase() === "/start") {
           return await bot.sendMessage(chatId, 'Привет!', keyBoard.menu);
         }
-        if (text.toLowerCase() === "/status") {
-          logger('Статус пользователя', JSON.stringify(msg))
-          return await bot.sendMessage(chatId, 'Спасибо, информация передана!');
-        }
+
         /*if (text.toLowerCase() === "/info") {
           return await bot.sendMessage(chatId, 'О клубе', keyBoard.menu);
         }*/

@@ -1,3 +1,5 @@
+import { AuthDataValidator } from '@telegram-auth/server';
+import { objectToAuthDataMap } from '@telegram-auth/server/utils';
 import express from "express";
 import logger from "../functions/logger.js";
 import {Users} from "../models.js";
@@ -89,7 +91,7 @@ router.post("/update-user", async (req, res) => {
 
     const update = await updateUserInfo(userChatId, userValues);
 
-    console.log(update)
+    // console.log(update)
 
     return res.status(update.status).send(update.text);
 
@@ -138,6 +140,41 @@ router.post("/send-message", async (req, res) => {
     return res.status(200).send(data);
   } catch (err) {
     return res.status(500).send(err);
+  }
+})
+
+router.post("/validate-user", async (req, res) => {
+  try {
+    const { data } = req.body;
+
+    if (!data) {
+      return res.status(400).json({ error: 'data is required' });
+    }
+
+    const MAX_AUTH_AGE = 24 * 60 * 60;
+
+    if (Math.floor(Date.now() / 1000) - data.auth_date > MAX_AUTH_AGE) {
+      return res.status(400).json({ error: 'Authorization data expired' });
+    }
+
+    const validator = new AuthDataValidator({
+      botToken: process.env.BOT_AUTH_TOKEN,
+    });
+
+    const userData = objectToAuthDataMap(data);
+
+    const result = await validator.validate(userData);
+
+    if (!result) {
+      return res.status(401).json({ error: 'Invalid hash' });
+    }
+
+    // Возвращаем данные пользователя
+    return res.status(200).send(result);
+
+  } catch (err) {
+    console.error('Error validating user:', err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 })
 
