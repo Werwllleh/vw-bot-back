@@ -104,7 +104,7 @@ router.post("/update-user", async (req, res) => {
 router.post("/about-user", async (req, res) => {
   try {
 
-    if (req.headers.authorization) {
+    if (req.headers?.authorization) {
 
       const accessToken = req.headers.authorization.split('Bearer ')[1];
 
