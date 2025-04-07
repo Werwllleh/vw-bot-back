@@ -6,6 +6,7 @@ import cors from 'cors';
 import dbConnect from './functions/dbConnect.js';
 import fileUpload from 'express-fileupload';
 
+import authRouter from './api/auth.js';
 import carsRouter from './api/cars.js';
 import userRouter from './api/users.js';
 import partnersRouter from './api/partners.js';
@@ -26,11 +27,16 @@ const app = express();
 export const bot = new TelegramBot(token, {polling: true});
 
 const allowedOrigins = [
+  process.env.URL_LOCAL,
   process.env.URL_FRONT,
   process.env.URL_FRONT_QA,
   process.env.URL_BOT,
   process.env.URL_CMS,
 ];
+
+app.use(cors({
+  credentials: true,
+}));
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
@@ -62,6 +68,7 @@ app.get("/api", async (req, res) => {
 app.use("/api/car", express.static("img/cars"));
 app.use("/api/bot", express.static("img/bot-data"));
 
+app.use("/api", authRouter);
 app.use("/api", carsRouter);
 app.use("/api", userRouter);
 app.use("/api", partnersRouter);

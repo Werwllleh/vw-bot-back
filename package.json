@@ -25,6 +25,7 @@
     "grammy": "^1.33.0",
     "imagemin": "^9.0.0",
     "imagemin-webp": "^8.0.0",
+    "jose": "^6.0.10",
     "moment-timezone": "^0.5.46",
     "mv": "^2.1.1",
     "node-telegram-bot-api": "^0.66.0",
