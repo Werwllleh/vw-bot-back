@@ -3,6 +3,7 @@ import logger from "../functions/logger.js";
 import {Users} from "../models.js";
 import {getAllUsers, getUserInfo, deleteUser, sendUserMessage, updateUserInfo} from "../db/user-methods.js";
 import {getRandomColor} from "../functions/randomColor.js";
+import {verifyToken} from "../functions/authorization.js";
 
 const adminId = process.env.ADMIN;
 
@@ -102,9 +103,24 @@ router.post("/update-user", async (req, res) => {
 
 router.post("/about-user", async (req, res) => {
   try {
-    const chatId = req.body.chatId;
-    const data = await getUserInfo(chatId);
-    return res.status(200).send(data);
+
+    if (req.headers.authorization) {
+
+      const accessToken = req.headers.authorization.split('Bearer ')[1];
+
+      const decoded = await verifyToken(accessToken);
+
+      if (decoded.chatId) {
+        const data = await getUserInfo(decoded.chatId);
+        return res.status(200).send(data);
+      }
+
+    } else {
+      const chatId = req.body.chatId;
+
+      const data = await getUserInfo(chatId);
+      return res.status(200).send(data);
+    }
   } catch (err) {
     return res.status(500).send(err);
   }

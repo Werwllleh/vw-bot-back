@@ -27,7 +27,6 @@ const app = express();
 export const bot = new TelegramBot(token, {polling: true});
 
 const allowedOrigins = [
-  process.env.URL_LOCAL,
   process.env.URL_FRONT,
   process.env.URL_FRONT_QA,
   process.env.URL_BOT,
@@ -35,7 +34,11 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  credentials: true,
+  origin: [
+    process.env.URL_FRONT,
+    process.env.URL_FRONT_QA,
+  ],
+  credentials: true, // Разрешить отправку кук
 }));
 
 app.use((req, res, next) => {
@@ -72,80 +75,6 @@ app.use("/api", authRouter);
 app.use("/api", carsRouter);
 app.use("/api", userRouter);
 app.use("/api", partnersRouter);
-
-/*const start = async () => {
-  await dbConnect(); // Подключаем базу данных
-
-  await bot.api.setMyCommands([
-    {command: "start", description: "Обновление/перезапуск бота"},
-    {command: "info", description: "О клубе"},
-    {command: "partners", description: "Партнеры"},
-  ]);
-
-  bot.command(
-    "info",
-    (ctx) => ctx.reply("Текст о клубе"),
-  );
-
-  bot.on("message", async (ctx) => {
-    // const text = msg.text.toLowerCase();
-
-    try {
-      const chatId = ctx.chat.id;
-      const message = ctx.message.text;
-
-      if (String(chatId) !== String(adminId)) {
-        return await bot.api.sendMessage(chatId, "Привет! Бот уже совсем скоро заработает, еще чуть-чуть");
-      }
-
-      const userData = await getUserInfo(chatId);
-
-      if (userData) {
-        if (message.toLowerCase() === "/start") {
-          return await bot.api.sendMessage(chatId, 'Ознакомиться с клубными партнерами можно тут', {reply_markup: keyboardOpen});
-        }
-        if (message.toLowerCase() === "/partners") {
-          return await bot.api.sendMessage(chatId, 'Ознакомиться с клубными партнерами можно тут', {reply_markup: keyboardOpen});
-        }
-      } else {
-        return await bot.api.sendMessage(
-          chatId,
-          'Привет! Пожалуйста пройди регистрацию для полноценного использования',
-          {reply_markup: keyboardReg});
-      }
-    } catch (err) {
-      logger("Не отработал сценарий бота", err);
-      console.log(err);
-    }
-
-
-    /!*const text = msg.text;
-    const chatId = msg.chat.id;
-
-    try {
-      if (text.toLowerCase() === "/start") {
-        return sendMessage(bot, chatId, 'Воспользуйся кнопками', null, keyBoard.menu);
-      }
-
-      if (text.toLowerCase() === "регистрация") {
-        return sendMessage(bot, chatId, 'Test log', null, keyBoard.reg);
-      }
-
-      if (text.toLowerCase() === "партнеры") {
-        return sendMessage(bot, chatId, 'Партнеры тут', null, keyBoard.partners);
-      }
-
-
-    } catch (err) {
-      logger("Не отработал сценарий бота", err);
-      console.log(err);
-    }*!/
-
-
-  });
-
-  bot.start();
-};*/
 
 const start = async () => {
   await dbConnect(); // Подключаем базу данных

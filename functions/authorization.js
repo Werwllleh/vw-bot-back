@@ -1,3 +1,5 @@
+import { webcrypto } from 'crypto';
+globalThis.crypto = webcrypto;
 import { SignJWT, jwtVerify } from 'jose';
 
 // Секретный ключ для подписи токенов
