@@ -37,6 +37,7 @@ app.use(cors({
   origin: [
     process.env.URL_FRONT,
     process.env.URL_FRONT_QA,
+    process.env.URL_BOT,
   ],
   credentials: true, // Разрешить отправку кук
 }));
