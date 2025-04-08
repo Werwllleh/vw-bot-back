@@ -6,10 +6,12 @@ import cors from 'cors';
 import dbConnect from './functions/dbConnect.js';
 import fileUpload from 'express-fileupload';
 
+import cookieParser from "cookie-parser";
 import authRouter from './api/auth.js';
 import carsRouter from './api/cars.js';
 import userRouter from './api/users.js';
 import partnersRouter from './api/partners.js';
+import protectRouter from './api/protect.js';
 
 import logger from './functions/logger.js';
 import {keyBoard} from "./keyboards.js";
@@ -59,7 +61,9 @@ app.use((req, res, next) => {
   next();
 });
 
+
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(fileUpload({}));
 
@@ -72,10 +76,14 @@ app.get("/api", async (req, res) => {
 app.use("/api/car", express.static("img/cars"));
 app.use("/api/bot", express.static("img/bot-data"));
 
+
 app.use("/api", authRouter);
 app.use("/api", carsRouter);
 app.use("/api", userRouter);
 app.use("/api", partnersRouter);
+app.use("/api", protectRouter);
+
+
 
 const start = async () => {
   await dbConnect(); // Подключаем базу данных

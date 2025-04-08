@@ -56,23 +56,28 @@ router.post('/auth/login', async (req, res) => {
   }
 });
 
-router.post('/auth/access-token', async (req, res) => {
+router.post('/auth/refresh-token', async (req, res) => {
   try {
+
     const {refreshToken} = req.cookies;
 
     if (!refreshToken) {
       return res.status(401).send({error: 'Refresh token not provided'});
     }
 
+    console.log(refreshToken);
+
     // Проверка Refresh Token
     const decoded = await verifyToken(refreshToken);
+
+    console.log(decoded);
 
     // Создание новых токенов
     const accessToken = await generateAccessToken(decoded);
     const newRefreshToken = await generateRefreshToken(decoded);
 
     // Обновление Refresh Token в куки
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
       domain: '.vagclub21.ru',
       sameSite: 'strict',
@@ -88,7 +93,7 @@ router.post('/auth/access-token', async (req, res) => {
       maxAge: 60 * 60 * 1000, // 15 мин
     });
 
-    return res.status(200).send("OK");
+    return res.status(200).send({data: {accessToken: accessToken}});
   } catch (err) {
     console.error('Error refreshing tokens:', err);
     return res.status(401).send({error: 'Invalid refresh token'});
