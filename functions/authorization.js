@@ -1,6 +1,7 @@
 import { webcrypto } from 'crypto';
-globalThis.crypto = webcrypto;
+// globalThis.crypto = webcrypto;
 import { SignJWT, jwtVerify } from 'jose';
+import res from "express/lib/response.js";
 
 // Секретный ключ для подписи токенов
 const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
@@ -32,3 +33,7 @@ export const verifyToken = async (token) => {
     throw new Error('Invalid token');
   }
 };
+
+export const getAuthorizationField = (req) => {
+  return req?.headers?.authorization?.split('Bearer ')[1]
+}

@@ -18,6 +18,7 @@ router.post('/auth/login', async (req, res) => {
     const userData = objectToAuthDataMap(data);
 
     const result = await validator.validate(userData);
+    // 'Error: Unauthorized! The data has expired.'
 
     if (!result) {
       return res.status(401).json({error: 'Invalid hash'});
@@ -33,7 +34,7 @@ router.post('/auth/login', async (req, res) => {
     const refreshToken = await generateRefreshToken(jwt);
 
     // Отправка токенов
-    res.cookie('refreshToken', refreshToken, {
+    /*res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       domain: '.vagclub21.ru',
       sameSite: 'strict',
@@ -47,9 +48,14 @@ router.post('/auth/login', async (req, res) => {
       sameSite: 'strict',
       secure: true, // Только для HTTPS
       maxAge: 60 * 60 * 1000, // 15 мин
-    });
+    });*/
 
-    return res.status(200).send("OK");
+    const tokens = {
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    }
+
+    return res.status(200).send({ tokens: JSON.stringify(tokens) });
   } catch (err) {
     console.error('Error during login:', err);
     return res.status(500).send({error: 'Internal server error'});
@@ -59,41 +65,41 @@ router.post('/auth/login', async (req, res) => {
 router.post('/auth/refresh-token', async (req, res) => {
   try {
 
-    const {refreshToken} = req.cookies;
+    const {refreshToken} = req.body;
 
     if (!refreshToken) {
       return res.status(401).send({error: 'Refresh token not provided'});
     }
 
-    console.log(refreshToken);
-
     // Проверка Refresh Token
     const decoded = await verifyToken(refreshToken);
-
-    console.log(decoded);
 
     // Создание новых токенов
     const accessToken = await generateAccessToken(decoded);
     const newRefreshToken = await generateRefreshToken(decoded);
 
     // Обновление Refresh Token в куки
-    res.cookie('refreshToken', newRefreshToken, {
+    /*res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
       domain: '.vagclub21.ru',
       sameSite: 'strict',
       secure: true, // Обязательно для sameSite: 'none'
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 дней
     });
-
     res.cookie('accessToken', accessToken, {
       httpOnly: false,
       domain: '.vagclub21.ru',
       sameSite: 'strict',
       secure: true, // Только для HTTPS
       maxAge: 60 * 60 * 1000, // 15 мин
-    });
+    });*/
 
-    return res.status(200).send({data: {accessToken: accessToken}});
+    const tokens = {
+      accessToken: accessToken,
+      refreshToken: newRefreshToken,
+    }
+
+    return res.status(200).send({ tokens: JSON.stringify(tokens) });
   } catch (err) {
     console.error('Error refreshing tokens:', err);
     return res.status(401).send({error: 'Invalid refresh token'});

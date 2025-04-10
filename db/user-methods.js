@@ -46,7 +46,7 @@ export const updateUserInfo = async (chatId, values) => {
 
     if (!user || (String(user.chat_id) !== String(chatId) && chatId !== process.env.ADMIN)) {
       return {
-        status: 403,
+        status: 500,
         text: 'Доступ запрещен',
       };
     }

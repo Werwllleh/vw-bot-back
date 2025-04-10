@@ -29,6 +29,7 @@ const app = express();
 export const bot = new TelegramBot(token, {polling: true});
 
 const allowedOrigins = [
+  process.env.URL_LOCAL,
   process.env.URL_FRONT,
   process.env.URL_FRONT_QA,
   process.env.URL_BOT,
@@ -37,6 +38,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: [
+    process.env.URL_LOCAL,
     process.env.URL_FRONT,
     process.env.URL_FRONT_QA,
     process.env.URL_BOT,

@@ -1,5 +1,5 @@
 import express from "express";
-import {verifyToken} from "../functions/authorization.js";
+import {getAuthorizationField, verifyToken} from "../functions/authorization.js";
 import {getAllUsers, getUserInfo, deleteUser, sendUserMessage, updateUserInfo} from "../db/user-methods.js";
 
 const protectRouter = express.Router();
@@ -37,23 +37,52 @@ protectRouter.use('/protect', authenticateAccessToken);
 
 protectRouter.post('/protect/user', async (req, res) => {
 
-  if (req.headers?.authorization) {
-    const accessToken = req.headers.authorization.split('Bearer ')[1];
-    const decoded = await verifyToken(accessToken);
+  const accessToken = getAuthorizationField(req);
 
-    if (!decoded) {
-      return res.status(401).json({ error: 'jwt invalid' });
-    }
-
-    const userData = await getUserInfo(decoded.chatId);
-
-    if (!userData) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    res.json({ user: { data: userData, userPhoto: decoded.photo } });
-
+  if (!accessToken) {
+    return res.status(401).json({ error: 'jwt expired' });
   }
+
+  const decoded = await verifyToken(accessToken);
+
+  if (!decoded) {
+    return res.status(401).json({ error: 'jwt invalid' });
+  }
+
+  const userData = await getUserInfo(decoded.chatId);
+
+  if (!userData) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  res.json({ user: { data: userData, userPhoto: decoded.photo } });
+});
+
+protectRouter.post('/protect/update-user', async (req, res) => {
+
+  const accessToken = getAuthorizationField(req);
+
+  if (!accessToken) {
+    return res.status(401).json({ error: 'jwt expired' });
+  }
+
+  const decoded = await verifyToken(accessToken);
+
+  if (!decoded) {
+    return res.status(401).json({ error: 'jwt invalid' });
+  }
+
+  const userChatId = decoded.chatId;
+  const {data} = req.body;
+
+  console.log(userChatId)
+  console.log(data)
+
+  const update = await updateUserInfo(userChatId, data);
+
+  console.log(update);
+
+  return res.status(update.status).json({ text: update.text });
 });
 
 export default protectRouter;
