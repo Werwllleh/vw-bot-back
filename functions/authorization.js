@@ -1,5 +1,5 @@
 import { webcrypto } from 'crypto';
-globalThis.crypto = webcrypto;
+// globalThis.crypto = webcrypto;
 import { SignJWT, jwtVerify } from 'jose';
 import res from "express/lib/response.js";
 
