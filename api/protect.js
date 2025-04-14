@@ -1,6 +1,7 @@
 import express from "express";
 import {getAuthorizationField, verifyToken} from "../functions/authorization.js";
 import {getAllUsers, getUserInfo, deleteUser, sendUserMessage, updateUserInfo} from "../db/user-methods.js";
+import {updateUserCar} from "../db/cars-methods.js";
 
 const protectRouter = express.Router();
 
@@ -83,6 +84,28 @@ protectRouter.post('/protect/update-user', async (req, res) => {
   console.log(update);
 
   return res.status(update.status).json({ text: update.text });
+});
+
+protectRouter.post('/protect/change-car-info', async (req, res) => {
+
+  const accessToken = getAuthorizationField(req);
+
+  if (!accessToken) {
+    return res.status(401).json({ error: 'jwt expired' });
+  }
+
+  const decoded = await verifyToken(accessToken);
+
+  if (!decoded) {
+    return res.status(401).json({ error: 'jwt invalid' });
+  }
+
+  const userChatId = decoded.chatId;
+  const {carId, data} = req.body;
+
+  const updateCarStatus = await updateUserCar(userChatId, carId, data);
+
+  res.status(updateCarStatus.status).send(updateCarStatus.text);
 });
 
 export default protectRouter;
