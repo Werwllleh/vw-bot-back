@@ -251,4 +251,23 @@ router.post("/change-car-data", async (req, res) => {
   }
 });
 
+
+//site
+router.get("/cars", async (req, res) => {
+  try {
+
+    const number = req.query.number;
+
+    if (number) {
+      const cars = await getUsersCars(number);
+      return res.status(200).send(cars);
+    }
+
+    const cars = await getUsersCars();
+    return res.status(200).send(cars);
+  } catch (e) {
+    res.status(500).send(e);
+  }
+});
+
 export default router;

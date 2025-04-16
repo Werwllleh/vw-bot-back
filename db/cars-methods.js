@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import {Users, Cars} from '../models.js';
 import path from "path";
 import fs from "fs";
@@ -76,16 +77,21 @@ export const getCarInfo = async (car_number) => {
   }
 }
 
-export const getUsersCars = async () => {
+export const getUsersCars = async (number) => {
   try {
-    const carsData = await Cars.findAll({
-      include: Users, // Включая владельца авто
-      order: [
-        ['createdAt', 'DESC'],
-      ]
-    });
 
-    return carsData;
+    // Определяем условия для поиска
+    const whereCondition = number ? {
+        car_number: {
+          [Op.like]: `%${number}%`, // Ищем значения, содержащие `number`
+        },
+      } : {}; // Если `number` не передан, условия отсутствуют
+
+    return await Cars.findAll({
+      where: whereCondition,
+      include: Users, // Включая владельца авто
+      order: [['createdAt', 'DESC']]
+    });
 
   } catch (err) {
     console.error('Ошибка при получении всех автомобилей', err);

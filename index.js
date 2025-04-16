@@ -51,12 +51,10 @@ app.use(cors({
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  console.log(`Request origin: ${origin}`); // Логируем origin для диагностики
+  // console.log(`Request origin: ${origin}`); // Логируем origin для диагностики
   if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
-    console.log(`CORS allowed for origin: ${origin}`); // Логируем успешное добавление заголовка
-  } else {
-    console.log(`CORS denied for origin: ${origin}`); // Логируем отклонение
+    // console.log(`CORS allowed for origin: ${origin}`); // Логируем успешное добавление заголовка
   }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
