@@ -1,13 +1,13 @@
 import express from "express";
-import {getAuthorizationField, verifyToken} from "../functions/authorization.js";
-import {getAllUsers, getUserInfo, deleteUser, sendUserMessage, updateUserInfo} from "../db/user-methods.js";
+import {verifyToken} from "../functions/authorization.js";
+import {getUserInfo, updateUserInfo} from "../db/user-methods.js";
 import {updateUserCar} from "../db/cars-methods.js";
 
 const protectRouter = express.Router();
 
 protectRouter.use('/protect', (req, res, next) => {
-  console.log('Request URL:', req.originalUrl);
-  console.log('Request Type:', req.method);
+  /*console.log('Request URL:', req.originalUrl);
+  console.log('Request Type:', req.method);*/
   next();
 });
 
@@ -23,8 +23,7 @@ export const authenticateAccessToken = async (req, res, next) => {
 
     try {
       // Проверяем токен на валидность
-      const decoded = await verifyToken(accessToken);
-      req.user = decoded; // Сохраняем данные пользователя в объекте запроса
+      req.user = await verifyToken(accessToken); // Сохраняем данные пользователя в объекте запроса
       return next(); // Продолжаем выполнение маршрута
     } catch (tokenError) {
       return res.status(403).json({ error: 'jwt no verified' });
@@ -38,7 +37,7 @@ protectRouter.use('/protect', authenticateAccessToken);
 
 protectRouter.post('/protect/user', async (req, res) => {
 
-  const accessToken = getAuthorizationField(req);
+  const accessToken = req.cookies.accessToken;
 
   if (!accessToken) {
     return res.status(401).json({ error: 'jwt expired' });
@@ -61,7 +60,7 @@ protectRouter.post('/protect/user', async (req, res) => {
 
 protectRouter.post('/protect/update-user', async (req, res) => {
 
-  const accessToken = getAuthorizationField(req);
+  const {accessToken} = req.cookies;
 
   if (!accessToken) {
     return res.status(401).json({ error: 'jwt expired' });
@@ -88,7 +87,7 @@ protectRouter.post('/protect/update-user', async (req, res) => {
 
 protectRouter.post('/protect/change-car-info', async (req, res) => {
 
-  const accessToken = getAuthorizationField(req);
+  const {accessToken} = req.cookies;
 
   if (!accessToken) {
     return res.status(401).json({ error: 'jwt expired' });
