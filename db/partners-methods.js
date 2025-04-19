@@ -74,6 +74,7 @@ export const createUpdatePartner = async (chatId, data, partnerId) => {
       // Если партнер не найден, создаем нового
       const createPartner = await Partners.create({
         title: data.title,
+        slug: translite(data.title),
         description: data.description,
         links: JSON.stringify(data.links),
         phones: JSON.stringify(data.phones),
@@ -102,6 +103,7 @@ export const createUpdatePartner = async (chatId, data, partnerId) => {
         // Обновляем партнера
         await checkPartner.update({
           title: data.title,
+          slug: translite(data.title),
           description: data.description,
           links: JSON.stringify(data.links),
           phones: JSON.stringify(data.phones),
