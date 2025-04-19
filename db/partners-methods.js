@@ -268,3 +268,82 @@ export const updatePartnerStatus = async (chatId, partnerId, data) => {
     return { success: false, message: 'Ошибка при добавлении/удалении партнера' };
   }
 };
+
+//site
+
+export const getPartners = async (filter) => {
+  try {
+    // Запрашиваем партнеров с их категориями
+    const partners = await Partners.findAll({
+      where: {
+        active: true,
+      },
+      order: [["createdAt", "ASC"]],
+      include: {
+        model: PartnersCategories,
+        through: { attributes: [] }, // Не включать данные промежуточной таблицы
+        // attributes: ['id', 'label', 'value'], // Включить только ID категорий
+      },
+    });
+
+    const updatePartner = async (partner) => {
+      const checkPartner = await Partners.findByPk(partner.id);
+
+      await checkPartner.update({
+        slug: translite(checkPartner.title)
+      })
+    }
+
+    if (!!partners.length) {
+      partners.map(async (partner) => {
+
+        if (partner.slug === null) {
+          await updatePartner(partner)
+        }
+
+      })
+    }
+
+    return partners;
+
+  } catch (error) {
+    console.error('Ошибка при получении партнеров с категориями:', error);
+    throw error;
+  }
+}
+
+export const getPartner = async (slug) => {
+  try {
+
+    console.log(slug)
+
+    if (!slug) {
+      return null
+    }
+
+    // Запрашиваем партнера с его категориями
+    const partner = await Partners.findOne({
+      where: {
+        active: true,
+        slug: slug, // Ищем активного партнера по slug
+      },
+      // attributes: ["id", "name", "slug", "description", "createdAt"], // Указываем, какие поля возвращать
+      // order: [["createdAt", "ASC"]], // Сортировка по дате создания
+      include: {
+        model: PartnersCategories, // Подключаем связанные категории
+        through: { attributes: [] }, // Исключаем данные из промежуточной таблицы
+        attributes: ["id", "label", "value"], // Возвращаем только нужные поля категорий
+      },
+    });
+
+    // Если партнер не найден, выбрасываем ошибку
+    if (!partner) {
+      throw new Error("Партнер не найден");
+    }
+
+    return partner; // Возвращаем найденного партнера
+  } catch (error) {
+    console.error("Ошибка при получении партнера с категориями:", error);
+    throw error; // Пробрасываем ошибку дальше
+  }
+};

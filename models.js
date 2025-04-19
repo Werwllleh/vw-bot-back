@@ -42,6 +42,7 @@ Cars.belongsTo(Users, {
 export const Partners = sequelize.define('partners', {
   id: {type: DataTypes.INTEGER, primaryKey: true, unique: true, autoIncrement: true},
   title: {type: DataTypes.STRING, allowNull: false},
+  slug: {type: DataTypes.STRING, allowNull: false},
   description: {type: DataTypes.TEXT, allowNull: false},
   links: {type: DataTypes.TEXT, allowNull: true, defaultValue: '-'},
   phones: {type: DataTypes.TEXT, allowNull: true, defaultValue: '-'},
