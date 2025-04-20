@@ -35,7 +35,6 @@ const allowedOrigins = [
   process.env.URL_FRONT_QA,
   process.env.URL_BOT,
   process.env.URL_CMS,
-  process.env.URL_TEST,
 ];
 
 app.use(cors({

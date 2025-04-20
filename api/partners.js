@@ -5,8 +5,9 @@ import {
   getPartnersCategories,
   getPartnersWithCategories,
   createUpdatePartner,
-  deletePartner, getPartnersForUsers, updatePartnerStatus
+  deletePartner, getPartnersForUsers, updatePartnerStatus, getPartners, getPartner
 } from "../db/partners-methods.js";
+import {verifyToken} from "../functions/authorization.js";
 
 const router = express.Router();
 
@@ -130,5 +131,32 @@ router.get("/get-partners-users", async (req, res) => {
     return res.status(500).send(err);
   }
 })
+
+//site
+
+router.post('/partners', async (req, res) => {
+
+  const partners = await getPartners();
+
+  if (!partners) {
+    return res.status(404).json({ error: 'Partners not found' });
+  }
+
+  res.status(200).json(partners);
+});
+
+router.post('/partner', async (req, res) => {
+
+  const {slug} = req.body;
+
+  const partner = await getPartner(slug);
+
+  if (!partner) {
+    return res.status(404).json({ error: 'Partner not found' });
+  }
+
+  res.status(200).json(partner);
+});
+
 
 export default router;
