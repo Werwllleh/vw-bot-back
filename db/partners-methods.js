@@ -3,6 +3,7 @@ import {getUserInfo} from "./user-methods.js";
 import {getRandomColor} from "../functions/randomColor.js";
 import {translite} from "../functions/translite.js";
 import logger from "../functions/logger.js";
+import {Op} from "sequelize";
 
 
 const adminId = process.env.ADMIN;
@@ -273,22 +274,37 @@ export const updatePartnerStatus = async (chatId, partnerId, data) => {
 
 //site
 
-export const getPartners = async (filter) => {
+/*export const getPartners = async (filter) => {
+
   try {
+    const filterQuery = {
+      active: true,
+      [Op.and]: [
+        filter?.label && {
+          title: {
+            [Op.iLike]: `%${filter.label}%`,
+          },
+        },
+        !!filter?.categories?.length && {
+          '$categories.value$': {
+            [Op.in]: filter.categories,
+          },
+        },
+      ].filter(Boolean), // Убираем null или undefined значения
+    };
     // Запрашиваем партнеров с их категориями
-    const partners = await Partners.findAll({
-      where: {
-        active: true,
-      },
+    return await Partners.findAll({
+      where: filter ? filterQuery : { active: true },
       order: [["createdAt", "ASC"]],
       include: {
         model: PartnersCategories,
         through: { attributes: [] }, // Не включать данные промежуточной таблицы
+        required: !!filter?.categories?.length,
         // attributes: ['id', 'label', 'value'], // Включить только ID категорий
       },
     });
 
-    const updatePartner = async (partner) => {
+    /!*const updatePartner = async (partner) => {
       const checkPartner = await Partners.findByPk(partner.id);
 
       await checkPartner.update({
@@ -304,9 +320,49 @@ export const getPartners = async (filter) => {
         }
 
       })
+    }*!/
+
+    // return partners;
+
+  } catch (error) {
+    console.error('Ошибка при получении партнеров с категориями:', error);
+    throw error;
+  }
+}*/
+
+export const getPartners = async (filter) => {
+  try {
+    const where = {
+      active: true,
+    };
+
+    if (filter?.label) {
+      where.title = {
+        [Op.iLike]: `%${filter.label}%`,
+      };
     }
 
-    return partners;
+    const include = [
+      {
+        model: PartnersCategories,
+        through: { attributes: [] }, // Не включаем данные промежуточной таблицы
+      }
+    ];
+
+    if (filter?.categories?.length) {
+      include[0].where = {
+        value: {
+          [Op.in]: filter.categories,
+        },
+      };
+      include[0].required = true; // Важно! Иначе фильтр работать не будет
+    }
+
+    return await Partners.findAll({
+      where,
+      include,
+      order: [["createdAt", "ASC"]],
+    });
 
   } catch (error) {
     console.error('Ошибка при получении партнеров с категориями:', error);
@@ -316,8 +372,6 @@ export const getPartners = async (filter) => {
 
 export const getPartner = async (slug) => {
   try {
-
-    console.log(slug)
 
     if (!slug) {
       return null

@@ -136,13 +136,26 @@ router.get("/get-partners-users", async (req, res) => {
 
 router.post('/partners', async (req, res) => {
 
-  const partners = await getPartners();
 
-  if (!partners) {
-    return res.status(404).json({ error: 'Partners not found' });
+  const filter = req.body;
+
+  if (filter) {
+    const filteredPartners = await getPartners(filter);
+
+    if (!filteredPartners.length) {
+      return res.status(200).json(null);
+    }
+
+    return res.status(200).json(filteredPartners);
+  } else {
+    const partners = await getPartners();
+
+    if (!partners) {
+      return res.status(404).json({ error: 'Partners not found' });
+    }
+
+    return res.status(200).json(partners);
   }
-
-  res.status(200).json(partners);
 });
 
 router.post('/partner', async (req, res) => {
