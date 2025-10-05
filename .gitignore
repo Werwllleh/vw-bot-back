@@ -13,6 +13,8 @@
 
 /var
 .env
+.dev.env
+.prod.env
 
 .pnp.js
 
