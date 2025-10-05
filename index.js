@@ -1,5 +1,4 @@
 import 'dotenv/config';
-// import {Bot} from "grammy";
 import TelegramBot from 'node-telegram-bot-api';
 import express from 'express';
 import cors from 'cors';
@@ -29,7 +28,6 @@ const app = express();
 export const bot = new TelegramBot(token, {polling: true});
 
 const allowedOrigins = [
-
   process.env.URL_TEST,
   process.env.URL_FRONT,
   process.env.URL_FRONT_QA,

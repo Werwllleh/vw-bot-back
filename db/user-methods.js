@@ -94,13 +94,12 @@ export const getAllUsers = async () => {
   }
 }
 
-export const deleteUser = async (chatId) => {
+/*export const deleteUser = async (chatId) => {
   try {
     const userData = await Users.findOne({
       where: {chat_id: chatId},
       include: Cars,
     });
-
 
     console.log(userData)
 
@@ -112,6 +111,7 @@ export const deleteUser = async (chatId) => {
     // Удаляем пользователя
     await Users.destroy({
       where: { chat_id: chatId },
+      include: Cars,
     });
 
     if (!!userData.cars.length) {
@@ -125,7 +125,40 @@ export const deleteUser = async (chatId) => {
     logger('Ошибка удаления пользователя', err)
     console.error('Ошибка удаления пользователя', err)
   }
-}
+}*/
+
+export const deleteUser = async (chatId) => {
+  try {
+    // Находим пользователя с машинами
+    const userData = await Users.findOne({
+      where: { chat_id: chatId },
+      include: [{ model: Cars, as: 'cars' }],
+    });
+
+    if (!userData) {
+      console.log(`Пользователь с chatId ${chatId} не найден.`);
+      return;
+    }
+
+    // Сначала удаляем связанные машины
+    if (userData.cars && userData.cars.length > 0) {
+      await Cars.destroy({
+        where: { chat_id: chatId }, // или user_id, если поле называется иначе
+      });
+      console.log(`Удалено ${userData.cars.length} машин для chatId ${chatId}`);
+    }
+
+    // Потом удаляем пользователя
+    await Users.destroy({
+      where: { chat_id: chatId },
+    });
+
+    return `Пользователь успешно удалён.`
+  } catch (err) {
+    logger('Ошибка удаления пользователя', err);
+    console.error('Ошибка удаления пользователя:', err);
+  }
+};
 
 export const sendUserMessage = async (chat_id, message) => {
   try {
