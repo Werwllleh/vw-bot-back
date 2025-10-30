@@ -6,8 +6,8 @@
   "exports": "./index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "start:dev": "cross-env NODE_ENV=dev nodemon index.js",
-    "start:prod": "cross-env NODE_ENV=prod nodemon index.js"
+    "start:development": "cross-env NODE_ENV=development nodemon index.js",
+    "start:production": "cross-env NODE_ENV=production nodemon index.js"
   },
   "keywords": [],
   "author": "",

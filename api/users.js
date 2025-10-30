@@ -1,28 +1,10 @@
 import express from "express";
 import logger from "../functions/logger.js";
-import {Users} from "../models.js";
-import {getAllUsers, getUserInfo, deleteUser, sendUserMessage, updateUserInfo} from "../db/user-methods.js";
-import {getRandomColor} from "../functions/randomColor.js";
+import {getAllUsers, updateUserInfo} from "../db/user-methods.js";
 import {verifyToken} from "../functions/authorization.js";
-
-const adminId = process.env.ADMIN;
-
+import {createUser, getUserInfo, deleteUser, sendUserMessage,} from "../services/users.js";
 
 const router = express.Router();
-
-//создание пользователя в БД
-export const createUser = async (chatId, userName) => {
-  try {
-    return await Users.create({
-      chat_id: chatId,
-      user_name: userName.trim(),
-      user_color: getRandomColor(),
-      user_admin: String(chatId) === String(adminId),
-    });
-  } catch (error) {
-    console.error('Ошибка при создании пользователя', error);
-  }
-}
 
 
 router.post("/create-user", async (req, res) => {
@@ -32,52 +14,32 @@ router.post("/create-user", async (req, res) => {
     const userChatId = userData.chat_id;
     const userName = userData.username;
 
-    console.log(userData)
-
-
     const checkUser = await getUserInfo(userChatId);
 
-    if (checkUser) {
+    if (checkUser !== null) {
       logger('Пользователь уже был создан')
-      return res.status(500).json({
-        message: 'User was created',
-        success: false,
+      return res.status(409).json({
+        message: 'Пользователь уже был создан',
       });
     } else {
-      await createUser(userChatId, userName)
-        .then(() => {
-          return res.status(200).send(true);
-        })
-        .catch((err) => {
-          logger('Ошибка создания пользователя', err)
-          return res.status(500).send(false).message('error user create');
-        })
-    }
+      const resCreateUser = await createUser(userChatId, userName);
 
-
-    /*if (userData) {
-
-      const userChatId = userData.user.chatId;
-      const userName = userData.user.name;
-
-      const checkUser = await getUserInfo(userChatId);
-
-      //проверяем есть ли пользователь
-      if (!checkUser) {
-        await createUser(userChatId, userData.user);
-        await createUserCar(userChatId, userData.car);
-
-        return res.status(200).send("OK");
+      if (Object.entries(resCreateUser).length) {
+        return res.status(200).json({
+          message: 'Пользователь создан',
+        });
       } else {
-        // await createUserCar(userChatId, userData.cars);
-        // return res.status(200).send("OK");
-        return res.status(200).send("User already exists");
+        return res.status(500).json({
+          message: 'Ошибка при создании пользователя',
+        });
       }
-    }*/
+    }
   } catch (err) {
-    console.log('Ошибка при создании пользователя - ' + err);
+    console.log(err);
     logger('Ошибка при создании пользователя', err);
-    return res.status(500).send(err);
+    return res.status(500).json({
+      message: 'Ошибка при создании пользователя',
+    });
   }
 })
 

@@ -43,13 +43,13 @@ export const createUserCar = async (chatId, data) => {
 
       if (images.length) {
         await Cars.create({
-          car_brand: data.brand,
-          car_model: data.model,
-          car_year: data.carYear.trim(),
-          car_number: data.carNumber.trim().toUpperCase(),
-          car_note: data.carNote.trim(),
-          car_images: JSON.stringify(images),
-          chat_id: chatId,
+          brand: data.brand,
+          model: data.model,
+          year: data.carYear.trim(),
+          number: data.carNumber.trim().toUpperCase(),
+          note: data.carNote.trim(),
+          images: JSON.stringify(images),
+          chatId: chatId,
         });
       }
 

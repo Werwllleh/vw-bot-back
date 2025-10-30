@@ -12,7 +12,9 @@
 /.vscode
 
 /var
-.env
+.env.production
+.env.development
+.env.production
 .dev.env
 .prod.env
 

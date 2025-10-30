@@ -1,8 +1,9 @@
 import express from "express";
 import {verifyToken} from "../functions/authorization.js";
-import {getUserInfo, updateUserInfo} from "../db/user-methods.js";
+import {updateUserInfo} from "../db/user-methods.js";
 import {updateUserCar} from "../db/cars-methods.js";
-import {getPartner, getPartners, getPartnersForUsers} from "../db/partners-methods.js";
+import {getUserInfo} from "../services/users.js";
+
 
 const protectRouter = express.Router();
 

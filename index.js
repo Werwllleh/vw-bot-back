@@ -9,14 +9,15 @@ import cookieParser from "cookie-parser";
 import authRouter from './api/auth.js';
 import carsRouter from './api/cars.js';
 import userRouter from './api/users.js';
+import rolesRouter from './api/roles.js';
 import partnersRouter from './api/partners.js';
 import protectRouter from './api/protect.js';
 
 import logger from './functions/logger.js';
 import {keyBoard} from "./keyboards.js";
-import {getUserInfo} from "./db/user-methods.js";
+import {} from "./db/user-methods.js";
+import {getUserInfo} from "./services/users.js";
 
-const adminId = process.env.ADMIN;
 const token = process.env.TOKEN;
 const port = process.env.PORT;
 
@@ -80,6 +81,7 @@ app.use("/api/bot", express.static("img/bot-data"));
 app.use("/api", authRouter);
 app.use("/api", carsRouter);
 app.use("/api", userRouter);
+app.use("/api", rolesRouter);
 app.use("/api", partnersRouter);
 app.use("/api", protectRouter);
 
