@@ -21,12 +21,12 @@ export const Cars = sequelize.define('cars', {
   number: {type: DataTypes.STRING, allowNull: false, unique: true},
   note: {type: DataTypes.TEXT},
   drive2: {type: DataTypes.TEXT},
-  userId: {
-    type: DataTypes.INTEGER,
+  chatId: {
+    type: DataTypes.BIGINT,
     allowNull: false,
     references: {
       model: Users,
-      key: 'id'
+      key: 'chatId'
     }
   }
 }, {
@@ -36,11 +36,11 @@ export const Cars = sequelize.define('cars', {
 
 // Установка связи между Users и Cars
 Users.hasMany(Cars, {
-  foreignKey: 'userId'
+  foreignKey: 'chatId'
 });
 
 Cars.belongsTo(Users, {
-  foreignKey: 'userId'
+  foreignKey: 'chatId'
 });
 
 

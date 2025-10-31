@@ -1,20 +1,32 @@
 import express from "express";
 import logger from "../functions/logger.js";
 import {getAllUsers, updateUserInfo} from "../db/user-methods.js";
-import {verifyToken} from "../functions/authorization.js";
+import {authenticateAccessToken, verifyToken} from "../services/auth.js";
 import {createUser, getUserInfo, deleteUser, sendUserMessage,} from "../services/users.js";
+import {validateData} from "./protect.js";
 
 const router = express.Router();
 
 
-router.post("/create-user", async (req, res) => {
+router.post("/protect/create-user", authenticateAccessToken, async (req, res) => {
   try {
-    const userData = req.body;
 
-    const userChatId = userData.chat_id;
-    const userName = userData.username;
+    const hashData = await validateData(req, res);
 
-    const checkUser = await getUserInfo(userChatId);
+
+    const userData = req.body.data;
+
+    const chatId = hashData.chatId;
+    const name = userData.name.trim();
+    const instagram = userData?.instagram.trim() || null;
+
+    if (!chatId) {
+      return res.status(500).json({
+        message: 'Ошибка при создании пользователя',
+      });
+    }
+
+    const checkUser = await getUserInfo(chatId);
 
     if (checkUser !== null) {
       logger('Пользователь уже был создан')
@@ -22,7 +34,21 @@ router.post("/create-user", async (req, res) => {
         message: 'Пользователь уже был создан',
       });
     } else {
-      const resCreateUser = await createUser(userChatId, userName);
+
+      if (!name) {
+        return res.status(500).json({
+          message: 'Имя не указано',
+        });
+      }
+
+      const payload = {
+        chatId: chatId,
+        name: name,
+        instagram: instagram,
+      }
+
+      const resCreateUser = await createUser(payload);
+
 
       if (Object.entries(resCreateUser).length) {
         return res.status(200).json({

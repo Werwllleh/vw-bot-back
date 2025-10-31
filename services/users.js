@@ -2,14 +2,16 @@ import {Cars, CarsImages, Users} from "../models.js";
 import {randomColor} from "../functions/randomColor.js";
 import {sendIndividualMessage} from "../functions/sendIndividualMessage.js";
 import logger from "../functions/logger.js";
-import {verifyToken} from "../functions/authorization.js";
+import {verifyToken} from "./auth.js";
 
 //создание пользователя в БД
-export const createUser = async (chatId, userName) => {
+export const createUser = async (payload) => {
+
   try {
     return await Users.create({
-      chatId: chatId,
-      name: userName.trim(),
+      chatId: payload.chatId,
+      name: payload.name.trim(),
+      instagram: payload.instagram.trim(),
       color: randomColor(),
     });
   } catch (error) {

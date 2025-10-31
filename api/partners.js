@@ -7,7 +7,6 @@ import {
   createUpdatePartner,
   deletePartner, getPartnersForUsers, updatePartnerStatus, getPartners, getPartner
 } from "../db/partners-methods.js";
-import {verifyToken} from "../functions/authorization.js";
 
 const router = express.Router();
 

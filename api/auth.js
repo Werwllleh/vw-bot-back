@@ -1,7 +1,7 @@
 import express from "express";
 import {AuthDataValidator} from "@telegram-auth/server";
 import {objectToAuthDataMap} from "@telegram-auth/server/utils";
-import {generateAccessToken, generateRefreshToken, verifyToken} from "../functions/authorization.js";
+import {generateAccessToken, generateRefreshToken, verifyToken} from "../services/auth.js" ;
 
 
 const router = express.Router();

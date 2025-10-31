@@ -6,6 +6,7 @@
 /etc
 /logs
 /root
+/upload
 /img/cars
 /img/temp
 /.pnp
@@ -14,7 +15,6 @@
 /var
 .env.production
 .env.development
-.env.production
 .dev.env
 .prod.env
 
