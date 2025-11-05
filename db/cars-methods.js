@@ -39,20 +39,15 @@ export const resizedRegImages = async (imagesArray) => {
 export const createUserCar = async (chatId, data) => {
   try {
     if (data) {
-      const images = await resizedRegImages(data.images);
-
-      if (images.length) {
-        await Cars.create({
-          brand: data.brand,
-          model: data.model,
-          year: data.carYear.trim(),
-          number: data.carNumber.trim().toUpperCase(),
-          note: data.carNote.trim(),
-          images: JSON.stringify(images),
-          chatId: chatId,
-        });
-      }
-
+      return await Cars.create({
+        brand: data.brand,
+        model: data.model,
+        year: data.year.trim(),
+        number: data.number.trim().toUpperCase(),
+        note: data.note.trim(),
+        drive2: data.drive2.trim(),
+        chatId: chatId,
+      });
     }
   } catch (error) {
     console.error('Ошибка при создании авто', error);

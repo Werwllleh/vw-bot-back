@@ -2,7 +2,7 @@ import express from "express";
 import logger from "../functions/logger.js";
 import {getAllUsers, updateUserInfo} from "../db/user-methods.js";
 import {authenticateAccessToken, verifyToken} from "../services/auth.js";
-import {createUser, getUserInfo, deleteUser, sendUserMessage,} from "../services/users.js";
+import {createUser, getUserInfo, deleteUser, sendUserMessage, userCarsData,} from "../services/users.js";
 import {validateData} from "./protect.js";
 
 const router = express.Router();
@@ -12,7 +12,6 @@ router.post("/protect/create-user", authenticateAccessToken, async (req, res) =>
   try {
 
     const hashData = await validateData(req, res);
-
 
     const userData = req.body.data;
 
@@ -65,6 +64,37 @@ router.post("/protect/create-user", authenticateAccessToken, async (req, res) =>
     logger('Ошибка при создании пользователя', err);
     return res.status(500).json({
       message: 'Ошибка при создании пользователя',
+    });
+  }
+})
+
+router.post("/protect/user-cars", authenticateAccessToken, async (req, res) => {
+  try {
+
+    const hashData = await validateData(req, res);
+
+    const userData = req.body.data;
+
+    const chatId = hashData.chatId;
+
+    if (!chatId) {
+      return res.status(500).json({
+        message: 'Ошибка при получении данных пользователя',
+      });
+    }
+
+    const data = await userCarsData(chatId);
+
+    if (data.length) {
+      return res.status(200).json(data);
+    } else {
+      return res.status(200).json(null);
+    }
+  } catch (err) {
+    console.log(err);
+    logger('Ошибка при получении авто пользователя', err);
+    return res.status(500).json({
+      message: 'Ошибка при получении авто пользователя',
     });
   }
 })

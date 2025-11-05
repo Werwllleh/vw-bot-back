@@ -8,7 +8,7 @@ export const fileProcessing = async (file) => {
   if (!file) throw new Error('Файл отсутствует');
 
   const fileMimetype = file.mimetype || '';
-  const fileFormat = (file.name || '').trim().split('.').pop() || '';
+  const fileFormat = (file.name || '').toLowerCase().trim().split('.').pop() || '';
 
   const imagesDir = path.resolve('upload/image');
   const applicationsDir = path.resolve('upload/application');
@@ -18,7 +18,7 @@ export const fileProcessing = async (file) => {
   if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, {recursive: true});
   if (!fs.existsSync(applicationsDir)) fs.mkdirSync(applicationsDir, {recursive: true});
 
-  if (fileMimetype.startsWith('image')) {
+  if (fileMimetype.startsWith('image') || fileFormat === 'heic') {
     const baseName = uuidv4();
     const outName = `${baseName}.webp`;
     const tmpName = `${baseName}-orig.${fileFormat || 'tmp'}`;
@@ -29,6 +29,11 @@ export const fileProcessing = async (file) => {
     await file.mv(tmpPath);
 
     try {
+
+      if (fileFormat === 'heic') {
+        return await file.mv(outPath);
+      }
+
       const optimizedImageData = await optimizeImageToWebp(tmpPath, outPath);
 
       if (optimizedImageData && Object.values(optimizedImageData).length) {

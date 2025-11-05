@@ -1,5 +1,5 @@
 import express from "express";
-import {BRANDS, MODELS} from "../utils/consts.js";
+import {AUTOMOBILES, BRANDS, MODELS} from "../utils/consts.js";
 import logger from "../functions/logger.js";
 import {v4 as uuidv4} from "uuid";
 import fs from "fs";
@@ -14,6 +14,9 @@ import {
 import {Cars} from "../models.js";
 import resizeImage from "../functions/resizeImage.js";
 import {sendIndividualMessage} from "../functions/sendIndividualMessage.js";
+import {authenticateAccessToken} from "../services/auth.js";
+import {validateData} from "./protect.js";
+import {addUserCar} from "../services/cars.js";
 
 const adminId = process.env.ADMIN;
 
@@ -44,25 +47,36 @@ export const deleteFile = async (imageFile) => {
   });
 };
 
-router.post("/add-car", async (req, res) => {
+router.post("/protect/add-car", authenticateAccessToken, async (req, res) => {
   try {
-    const chatId = req.body.chatId;
-    const carData = req.body.data;
 
-    if (chatId && carData) {
-      await createUserCar(chatId, carData)
-        .then(() => {
-          sendIndividualMessage(process.env.ADMIN, `Новый авто: ${carData?.brand} ${carData?.model} - ${carData?.carNumber.trim().toUpperCase()} `)
-          return res.status(200).send("OK")
-        })
-        .catch(() => {
-          return res.status(500).send("Ошибка при добавлении авто")
-        })
+    const hashData = await validateData(req, res);
+    const chatId = hashData.chatId;
+
+    const carInfo = req.body;
+
+    if (!chatId || !carInfo || !Object.values(carInfo).length) {
+      return res.status(400).json({ message: "Некорректные данные" });
     }
 
+    try {
+      await addUserCar(chatId, carInfo);
+      return res.status(200);
+    } catch (error) {
+      if (error?.name === "SequelizeUniqueConstraintError" || error?.original?.code === "23505") {
+        return res.status(409).json({
+          message: "Данный номер авто уже зарегистрирован",
+        });
+      }
 
+      console.error("Ошибка при добавлении авто:", error);
+      return res.status(500).json({
+        message: "Произошла ошибка, попробуйте позже",
+      });
+    }
   } catch (e) {
-    return res.status(500).send(e);
+    console.error("Ошибка в add-car маршруте:", e);
+    return res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
@@ -87,13 +101,12 @@ router.post("/delete-car", async (req, res) => {
   }
 });
 
-router.get("/get-cars", async (req, res) => {
+router.get("/register-cars", async (req, res) => {
   try {
-    const cars = {
+    return res.json({
       brands: BRANDS,
       models: MODELS
-    }
-    return res.json(cars);
+    });
   } catch (e) {
     res.status(500).send(e);
   }

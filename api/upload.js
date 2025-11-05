@@ -5,6 +5,7 @@ import {Cars} from "../models.js";
 import logger from "../functions/logger.js";
 import {deleteFile} from "./cars.js";
 import {fileProcessing} from "../services/upload.js";
+import {authenticateAccessToken} from "../services/auth.js";
 
 const router = express.Router();
 

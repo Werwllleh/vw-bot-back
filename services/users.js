@@ -116,3 +116,20 @@ export const userRolesVerification = async (accessToken) => {
 
 
 }
+
+//получение информации об авто у пользователя со всеми связанными полями
+export const userCarsData = async (chatId) => {
+
+  try {
+    return await Cars.findAll({
+      where: {chatId},
+      include: [
+        {
+          model: CarsImages,
+        }
+      ]
+    });
+  } catch (error) {
+    console.error('Ошибка при получении user cars', error);
+  }
+}
