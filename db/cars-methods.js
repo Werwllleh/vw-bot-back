@@ -93,7 +93,7 @@ export const getUsersCars = async (number) => {
   }
 }
 
-export const updateUserCar = async (chat_id, car_id, car_data) => {
+/*export const updateUserCar = async (chat_id, car_id, car_data) => {
   try {
     const car = await Cars.findByPk(car_id);
 
@@ -139,7 +139,7 @@ export const updateUserCar = async (chat_id, car_id, car_data) => {
   } catch (err) {
     console.error('Ошибка обновления данных об авто', err);
   }
-}
+}*/
 
 export const deleteUserCar = async (chatId, carId) => {
   try {

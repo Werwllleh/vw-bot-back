@@ -9,14 +9,13 @@ import {
   deleteUserCar,
   getCarInfo,
   getUsersCars,
-  updateUserCar
 } from "../db/cars-methods.js";
 import {Cars} from "../models.js";
 import resizeImage from "../functions/resizeImage.js";
 import {sendIndividualMessage} from "../functions/sendIndividualMessage.js";
 import {authenticateAccessToken} from "../services/auth.js";
 import {validateData} from "./protect.js";
-import {addUserCar} from "../services/cars.js";
+import {addUserCar, getUserCar, updateUserCar} from "../services/cars.js";
 
 const adminId = process.env.ADMIN;
 
@@ -60,14 +59,25 @@ router.post("/protect/add-car", authenticateAccessToken, async (req, res) => {
     }
 
     try {
-      await addUserCar(chatId, carInfo);
-      return res.status(200);
-    } catch (error) {
-      if (error?.name === "SequelizeUniqueConstraintError" || error?.original?.code === "23505") {
+      const checkCarData = await getUserCar(carInfo.number);
+
+      if (!checkCarData) {
+        const data = await addUserCar(chatId, carInfo);
+        return res.status(200).json({
+          carId: data.id
+        });
+      } else {
         return res.status(409).json({
-          message: "Данный номер авто уже зарегистрирован",
+          carId: checkCarData.id,
+          message: "Данный номер авто уже зарегистрирован, добавьте фото",
         });
       }
+    } catch (error) {
+      /*if (error?.name === "SequelizeUniqueConstraintError" || error?.original?.code === "23505") {
+        return res.status(409).json({
+          message: "Данный номер авто уже зарегистрирован, добавьте фото",
+        });
+      }*/
 
       console.error("Ошибка при добавлении авто:", error);
       return res.status(500).json({
@@ -79,6 +89,57 @@ router.post("/protect/add-car", authenticateAccessToken, async (req, res) => {
     return res.status(500).json({ message: "Ошибка сервера" });
   }
 });
+
+router.post("/protect/update-car", authenticateAccessToken, async (req, res) => {
+  try {
+
+    const hashData = await validateData(req, res);
+    const chatId = hashData.chatId;
+
+    const newCarInfo = req.body;
+
+    if (!chatId || !newCarInfo || !Object.values(newCarInfo).length) {
+      return res.status(400).json({ message: "Некорректные данные" });
+    }
+
+    try {
+      const checkCarData = await updateUserCar(newCarInfo.number);
+
+      if (chatId !== checkCarData.chatId) {
+        return res.status(403).json({
+          message: "Нет доступа",
+        });
+      }
+
+      await updateUserCar(chatId, newCarInfo);
+
+      if (!checkCarData) {
+
+        return res.status(200);
+      } else {
+        return res.status(409).json({
+          message: "Данный номер авто уже зарегистрирован, добавьте фото",
+        });
+      }
+    } catch (error) {
+      /*if (error?.name === "SequelizeUniqueConstraintError" || error?.original?.code === "23505") {
+        return res.status(409).json({
+          message: "Данный номер авто уже зарегистрирован, добавьте фото",
+        });
+      }*/
+
+      console.error("Ошибка при добавлении авто:", error);
+      return res.status(500).json({
+        message: "Произошла ошибка, попробуйте позже",
+      });
+    }
+  } catch (e) {
+    console.error("Ошибка в add-car маршруте:", e);
+    return res.status(500).json({ message: "Ошибка сервера" });
+  }
+});
+
+
 
 router.post("/delete-car", async (req, res) => {
   try {
@@ -141,7 +202,7 @@ router.post("/change-car-data", async (req, res) => {
     const carData = req.body.data;
 
     if (chatId && carId && carData) {
-      const updateCarStatus = await updateUserCar(chatId, carId, carData);
+      const updateCarStatus = await updateUserCar(chatId, carData);
 
       res.status(updateCarStatus.status).send(updateCarStatus.text);
     }

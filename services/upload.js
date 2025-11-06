@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import sharp from "sharp";
 import logger from "../functions/logger.js";
+import {CarsImages} from "../models.js";
 
 export const fileProcessing = async (file) => {
   if (!file) throw new Error('Файл отсутствует');
@@ -78,4 +79,23 @@ export const optimizeImageToWebp = async (inputPath, outputPath, opts = {}) => {
     .webp({quality})
     .withMetadata()
     .toFile(outputPath);
+};
+
+export const addCarImage = async (carId, sources) => {
+  try {
+    // Если пришёл один файл — делаем массив
+    const imageArray = Array.isArray(sources) ? sources : [sources];
+
+    return await Promise.all(
+      imageArray.map(source =>
+        CarsImages.create({
+          carId,
+          source,
+        })
+      )
+    );
+  } catch (error) {
+    console.error('Ошибка при добавлении изображений автомобиля:', error);
+    throw error;
+  }
 };

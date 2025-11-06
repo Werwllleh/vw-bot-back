@@ -1,8 +1,8 @@
 import express from "express";
 import {authenticateAccessToken, verifyToken} from "../services/auth.js";
 import {updateUserInfo} from "../db/user-methods.js";
-import {updateUserCar} from "../db/cars-methods.js";
 import {getUserInfo} from "../services/users.js";
+import {updateUserCar} from "../services/cars.js";
 
 
 export const protectRouter = express.Router();
@@ -89,7 +89,7 @@ protectRouter.post('/protect/update-user', async (req, res) => {
   return res.status(update.status).json({ text: update.text });
 });
 
-protectRouter.post('/protect/change-car-info', async (req, res) => {
+/*protectRouter.post('/protect/change-car-info', async (req, res) => {
 
   const {accessToken} = req.cookies;
 
@@ -109,6 +109,6 @@ protectRouter.post('/protect/change-car-info', async (req, res) => {
   const updateCarStatus = await updateUserCar(userChatId, carId, data);
 
   res.status(updateCarStatus.status).send(updateCarStatus.text);
-});
+});*/
 
 export default protectRouter;

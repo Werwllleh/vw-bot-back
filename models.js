@@ -36,11 +36,13 @@ export const Cars = sequelize.define('cars', {
 
 // Установка связи между Users и Cars
 Users.hasMany(Cars, {
-  foreignKey: 'chatId'
+  foreignKey: 'chatId',
+  sourceKey: 'chatId',
 });
 
 Cars.belongsTo(Users, {
-  foreignKey: 'chatId'
+  foreignKey: 'chatId',
+  targetKey: 'chatId',
 });
 
 
