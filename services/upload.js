@@ -80,22 +80,3 @@ export const optimizeImageToWebp = async (inputPath, outputPath, opts = {}) => {
     .withMetadata()
     .toFile(outputPath);
 };
-
-export const addCarImage = async (carId, sources) => {
-  try {
-    // Если пришёл один файл — делаем массив
-    const imageArray = Array.isArray(sources) ? sources : [sources];
-
-    return await Promise.all(
-      imageArray.map(source =>
-        CarsImages.create({
-          carId,
-          source,
-        })
-      )
-    );
-  } catch (error) {
-    console.error('Ошибка при добавлении изображений автомобиля:', error);
-    throw error;
-  }
-};

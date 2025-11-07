@@ -6,10 +6,12 @@ import logger from "../functions/logger.js";
 import {deleteFile} from "./cars.js";
 import {fileProcessing} from "../services/upload.js";
 import {authenticateAccessToken} from "../services/auth.js";
+import {validateData} from "./protect.js";
+import {addCarImage} from "../services/cars.js";
 
 const router = express.Router();
 
-router.post("/upload", async (req, res) => {
+router.post("/upload", authenticateAccessToken, async (req, res) => {
   try {
 
     const uploadDir = path.resolve("upload");
@@ -19,26 +21,67 @@ router.post("/upload", async (req, res) => {
       fs.mkdirSync(uploadDir, {recursive: true});
     }
 
-    const chatId = req.body.chatId;
-    const car_id = req.body.carId;
+    const hashData = await validateData(req, res);
+    const chatId = hashData.chatId;
+    const uploadCategory = req.body.type;
+
+    const carId = req.body.carId;
 
     if (!req.files) return;
 
-    if (Object.values(req.files)[0].length) {
+    const files = Object.values(req.files)[0];
+    // Обработка: если массив — несколько файлов, если нет — один
+    const filesArray = Array.isArray(files) ? files : [files];
+
+    const results = await Promise.all(
+      filesArray.map(async (file) => {
+        const { path, filename } = await fileProcessing(file);
+        return { filename, path };
+      })
+    );
+
+    if (uploadCategory === 'car' && carId) {
+      results?.map(car => {
+        addCarImage(carId, car.filename)
+      })
+    }
+
+    return res.status(200).json({
+      message: "Загружено",
+      files: results
+    });
+
+    /*if (Object.values(req.files)[0].length) {
+
+      const uploadArray = [];
 
       const uploadData = Object.values(req.files)[0];
 
       uploadData.map((file) => {
-        fileProcessing(file)
+        const {path, filename} = fileProcessing(file);
+        uploadArray.push({path, filename});
       })
+
+      return res.status(200).json({
+        message: "Загружено",
+        files: uploadArray
+      });
+
     } else {
       const file = Object.values(req.files)[0];
-      await fileProcessing(file)
-    }
+      const {path, filename} = await fileProcessing(file);
 
-    return res.status(200).json({
-      message: "Отправлено",
-    });
+      return res.status(200).json({
+        message: "Загружено",
+        files: [
+          {
+            name: filename,
+            path: path
+          }
+        ]
+      });
+    }*/
+
 
     /*if (Object.values(req.files)[0].name) {
       const image = Object.values(req.files)[0];

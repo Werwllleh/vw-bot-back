@@ -77,3 +77,26 @@ export const updateUserCar = async (number, data) => {
 
   return car;
 }
+
+export const addCarImage = async (carId, sources) => {
+  try {
+    // Если пришёл один файл — делаем массив
+    const imageArray = Array.isArray(sources) ? sources : [sources];
+
+    return await Promise.all(
+      imageArray.map(source => {
+
+          const path = 'image/' + source
+
+          CarsImages.create({
+            carId,
+            source: path,
+          })
+        }
+      )
+    );
+  } catch (error) {
+    console.error('Ошибка при добавлении изображений автомобиля:', error);
+    throw error;
+  }
+};
