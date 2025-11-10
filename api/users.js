@@ -2,13 +2,13 @@ import express from "express";
 import logger from "../functions/logger.js";
 import {getAllUsers, updateUserInfo} from "../db/user-methods.js";
 import {authenticateAccessToken, verifyToken} from "../services/auth.js";
-import {createUser, getUserInfo, deleteUser, sendUserMessage, userCarsData,} from "../services/users.js";
+import {createUser, getUserInfo, deleteUser, sendUserMessage, userCarsData, updateUser,} from "../services/users.js";
 import {validateData} from "./protect.js";
 
 const router = express.Router();
 
 
-router.post("/protect/create-user", authenticateAccessToken, async (req, res) => {
+router.post("/create-user", authenticateAccessToken, async (req, res) => {
   try {
 
     const hashData = await validateData(req, res);
@@ -60,7 +60,6 @@ router.post("/protect/create-user", authenticateAccessToken, async (req, res) =>
       }
     }
   } catch (err) {
-    console.log(err);
     logger('Ошибка при создании пользователя', err);
     return res.status(500).json({
       message: 'Ошибка при создании пользователя',
@@ -68,7 +67,7 @@ router.post("/protect/create-user", authenticateAccessToken, async (req, res) =>
   }
 })
 
-router.post("/protect/user-cars", authenticateAccessToken, async (req, res) => {
+router.post("/user-cars", authenticateAccessToken, async (req, res) => {
   try {
 
     const hashData = await validateData(req, res);
@@ -99,23 +98,57 @@ router.post("/protect/user-cars", authenticateAccessToken, async (req, res) => {
   }
 })
 
-router.post("/update-user", async (req, res) => {
+router.post("/update-user", authenticateAccessToken, async (req, res) => {
   try {
-    const userData = req.body;
+    const hashData = await validateData(req, res);
 
-    const userChatId = userData.chat_id;
-    const userValues = userData.data;
+    const userData = req.body.data;
 
-    const update = await updateUserInfo(userChatId, userValues);
+    const chatId = hashData.chatId;
+    const name = userData.name.trim();
+    const instagram = userData?.instagram.trim() || null;
 
-    // console.log(update)
+    if (!chatId) {
+      return res.status(500).json({
+        message: 'Ошибка при обновлении пользователя',
+      });
+    }
 
-    return res.status(update.status).send(update.text);
+    const checkUser = await getUserInfo(chatId);
 
+    if (!checkUser) {
+      return res.status(500).json({
+        message: 'Пользователь не найден',
+      });
+    }
+
+    if (!name) {
+      return res.status(500).json({
+        message: 'Имя не указано',
+      });
+    }
+
+    const payload = {
+      name: name,
+      instagram: instagram,
+    }
+
+    const resUpdateUser = await updateUser(chatId, payload);
+
+    if (Object.entries(resUpdateUser).length) {
+      return res.status(200).json({
+        message: 'Данные обновлены',
+      });
+    } else {
+      return res.status(500).json({
+        message: 'Ошибка при обновлении пользователя',
+      });
+    }
   } catch (err) {
-    console.log('Ошибка обновления данных пользователя - ' + err);
-    logger('Ошибка обновления данных пользователя', err);
-    return res.status(500).send(err);
+    logger('Ошибка при обновлении пользователя', err);
+    return res.status(500).json({
+      message: 'Ошибка при обновлении пользователя',
+    });
   }
 })
 

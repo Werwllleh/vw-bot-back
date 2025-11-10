@@ -19,6 +19,19 @@ export const createUser = async (payload) => {
   }
 }
 
+//обновление пользователя в БД
+export const updateUser = async (chatId, payload) => {
+
+  try {
+
+    const user = await Users.findOne({ where: { chatId } });
+    return await user.update(payload);
+
+  } catch (error) {
+    console.error('Ошибка при обновлении пользователя', error);
+  }
+}
+
 //отправка сообщения пользователю через телеграм бот
 export const sendUserMessage = async (chat_id, message) => {
   try {

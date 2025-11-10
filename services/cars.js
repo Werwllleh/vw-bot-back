@@ -86,7 +86,7 @@ export const addCarImage = async (carId, sources) => {
     return await Promise.all(
       imageArray.map(source => {
 
-          const path = 'image/' + source
+          const path = source
 
           CarsImages.create({
             carId,
