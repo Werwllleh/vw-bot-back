@@ -1,10 +1,9 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
-import {Cars} from "../models.js";
+import {Cars, CarsImages} from "../models.js";
 import logger from "../functions/logger.js";
-import {deleteFile} from "./cars.js";
-import {fileProcessing} from "../services/upload.js";
+import {deleteFile, fileProcessing, removeFile} from "../services/upload.js";
 import {authenticateAccessToken} from "../services/auth.js";
 import {validateData} from "./protect.js";
 import {addCarImage} from "../services/cars.js";
@@ -151,42 +150,87 @@ router.post("/upload", authenticateAccessToken, async (req, res) => {
   }
 });
 
-router.post("/upload/remove", async (req, res) => {
+router.post("/remove", authenticateAccessToken, async (req, res) => {
   try {
 
-    const imageFile = req.body.fileName;
+    const filename = req.body.filename;
+    const removeType = req.body.type;
 
-    const chat_id = req.body?.data?.chat_id;
-    const car_id = req.body?.data?.car_id;
+    const hashData = await validateData(req, res);
+    const chatId = hashData.chatId;
 
 
-    if (chat_id && car_id) {
-      // const user = await getUserInfo(chat_id);
-      const pathFile = path.resolve('img/cars', imageFile);
-
-      const car = await Cars.findByPk(car_id);
-
-      if (Number(car.chat_id) === Number(chat_id) || Number(chat_id) === Number(adminId)) {
-        let images = JSON.parse(car.car_images);
-        images.splice(images.indexOf(imageFile), 1);
-        await car.update({car_images: JSON.stringify(images)});
-
-        await deleteFile(pathFile);
-
-        return res.status(200).send();
-      }
-    } else {
-      const pathFile = path.resolve('img/temp', imageFile);
-      await deleteFile(pathFile);
-
-      return res.status(200).send(); // Отправляем пустой ответ с успешным статусом
+    if (!chatId) {
+      return res.status(403).json({
+        message: "Не авторизован",
+      });
     }
 
+    if (!filename) {
+      return res.status(500).json({
+        message: "Данные для удаления не переданы",
+      });
+    }
+
+
+    if (removeType === 'car') {
+
+      const folder = 'upload/image';
+
+      const fileRemoved = removeFile(filename, folder);
+
+      /*if (!fileRemoved) {
+        return res.status(500).json({
+          message: "Ошибка при удалении файла",
+        });
+      }*/
+
+      await CarsImages.destroy({
+        where: { source: filename },
+      });
+
+      return res.status(200).json({
+        message: "Файл удален",
+        /*file: filename,
+        dbRecordsDeleted: deleted,
+        fileRemoved,*/
+      });
+    }
+
+    return res.status(200).json({
+      message: "Удалено",
+      fileName
+    });
+
+
   } catch (err) {
-    logger("Ошибка удаления изображения", err);
-    return res.status(500).send(err.message);
+    logger("Ошибка удаления файла", err);
+    return res.status(500).json({
+      message: "Ошибка удаления файла",
+    });
   }
 });
 
+/*if (chat_id && car_id) {
+   // const user = await getUserInfo(chat_id);
+   const pathFile = path.resolve('img/cars', imageFile);
+
+   const car = await Cars.findByPk(car_id);
+
+   if (Number(car.chat_id) === Number(chat_id) || Number(chat_id) === Number(adminId)) {
+     let images = JSON.parse(car.car_images);
+     images.splice(images.indexOf(imageFile), 1);
+     await car.update({car_images: JSON.stringify(images)});
+
+     await deleteFile(pathFile);
+
+     return res.status(200).send();
+   }
+ } else {
+   const pathFile = path.resolve('img/temp', imageFile);
+   await deleteFile(pathFile);
+
+   return res.status(200).send(); // Отправляем пустой ответ с успешным статусом
+ }*/
 
 export default router;

@@ -5,14 +5,10 @@ import {v4 as uuidv4} from "uuid";
 import fs from "fs";
 import path from "path";
 import {
-  createUserCar,
   deleteUserCar,
   getCarInfo,
   getUsersCars,
 } from "../db/cars-methods.js";
-import {Cars} from "../models.js";
-import resizeImage from "../functions/resizeImage.js";
-import {sendIndividualMessage} from "../functions/sendIndividualMessage.js";
 import {authenticateAccessToken} from "../services/auth.js";
 import {validateData} from "./protect.js";
 import {addUserCar, getUserCar, updateUserCar} from "../services/cars.js";
@@ -20,31 +16,6 @@ import {addUserCar, getUserCar, updateUserCar} from "../services/cars.js";
 const adminId = process.env.ADMIN;
 
 const router = express.Router();
-
-export const deleteFile = async (imageFile) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      await fs.access(path.resolve(imageFile), (err) => {
-        if (err) {
-          console.log("Ошибка удаления изображения, файл не найден", err)
-          logger("Ошибка удаления изображения, файл не найден", err);
-          return reject(err);
-        }
-        fs.unlink(path.resolve(imageFile), (err) => {
-          if (err) {
-            console.log("Ошибка удаления изображения", err)
-            logger("Ошибка удаления изображения", err);
-            return reject(err);
-          }
-          resolve();
-        });
-      });
-    } catch (err) {
-      console.log("Ошибка при удалении изображения", err)
-      logger("Ошибка при удалении изображения", err);
-    }
-  });
-};
 
 router.post("/protect/add-car", authenticateAccessToken, async (req, res) => {
   try {

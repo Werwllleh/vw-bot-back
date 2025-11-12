@@ -14,23 +14,42 @@ export const addUserCar = async (chatId, data) => {
   });
 };
 
-export const getUserCar = async (number) => {
+export const getUserCar = async (number, carId) => {
 
-  if (!number) throw new Error("Номер автомобиля не указан");
+  if (number) {
+    return await Cars.findOne({
+      where: {number},
+      include: [
+        {
+          model: Users,
+          required: false,
+        },
+        {
+          model: CarsImages,
+          required: false,
+        }
+      ]
+    });
+  }
 
-  return await Cars.findOne({
-    where: {number},
-    include: [
-      {
-        model: Users,
-        required: false,
-      },
-      {
-        model: CarsImages,
-        required: false,
-      }
-    ]
-  });
+  if (carId) {
+    return await Cars.findOne({
+      where: {id: carId},
+      include: [
+        {
+          model: Users,
+          required: false,
+        },
+        {
+          model: CarsImages,
+          required: false,
+        }
+      ]
+    });
+  }
+
+  if (!number || !carId) throw new Error("Данные по авто не переданы");
+
 }
 
 export const updateUserCar = async (number, data) => {

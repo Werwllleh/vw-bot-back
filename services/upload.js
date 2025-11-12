@@ -3,7 +3,6 @@ import path from "path";
 import fs from "fs";
 import sharp from "sharp";
 import logger from "../functions/logger.js";
-import {CarsImages} from "../models.js";
 
 export const fileProcessing = async (file) => {
   if (!file) throw new Error('Файл отсутствует');
@@ -80,3 +79,48 @@ export const optimizeImageToWebp = async (inputPath, outputPath, opts = {}) => {
     .withMetadata()
     .toFile(outputPath);
 };
+
+export const deleteFile = async (imageFile) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await fs.access(path.resolve(imageFile), (err) => {
+        if (err) {
+          console.log("Ошибка удаления изображения, файл не найден", err)
+          logger("Ошибка удаления изображения, файл не найден", err);
+          return reject(err);
+        }
+        fs.unlink(path.resolve(imageFile), (err) => {
+          if (err) {
+            console.log("Ошибка удаления изображения", err)
+            logger("Ошибка удаления изображения", err);
+            return reject(err);
+          }
+          resolve();
+        });
+      });
+    } catch (err) {
+      console.log("Ошибка при удалении изображения", err)
+      logger("Ошибка при удалении изображения", err);
+    }
+  });
+};
+
+export const removeFile = (filename, folder = "upload") => {
+  try {
+    if (!filename) return false;
+
+    const filePath = path.resolve(folder, filename);
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      console.log(`Файл удалён: ${filePath}`);
+      return true;
+    } else {
+      console.warn(`Файл не найден: ${filePath}`);
+      return false;
+    }
+  } catch (err) {
+    console.error("Ошибка при удалении файла:", err);
+    return false;
+  }
+}
