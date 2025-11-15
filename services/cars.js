@@ -52,12 +52,12 @@ export const getUserCar = async (number, carId) => {
 
 }
 
-export const updateUserCar = async (number, data) => {
+export const updateUserCar = async (carId, data) => {
 
-  if (!number) throw new Error("Номер автомобиля не указан");
+  if (!carId) throw new Error("Не передан Id авто");
 
   const car = await Cars.findOne({
-    where: {number},
+    where: {id: carId},
     include: [
       {
         model: CarsImages,
@@ -85,7 +85,7 @@ export const updateUserCar = async (number, data) => {
     await car.update({model: data.model});
   }
   if (data.year !== car.year) {
-    await car.update({year: data.year.trim()});
+    await car.update({year: data.year});
   }
   if (data.note !== car.note) {
     await car.update({note: data.note.trim()});
