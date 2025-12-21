@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import {Users, Cars} from '../models.js';
+import {Users, Cars, CarsImages} from '../models.js';
 import path from "path";
 import fs from "fs";
 import resizeImage from "../functions/resizeImage.js";
@@ -72,7 +72,7 @@ export const getCarInfo = async (car_number) => {
   }
 }
 
-export const getUsersCars = async (number) => {
+/*export const getUsersCars = async (number) => {
   try {
 
     // Определяем условия для поиска
@@ -84,14 +84,79 @@ export const getUsersCars = async (number) => {
 
     return await Cars.findAll({
       where: whereCondition,
-      include: Users, // Включая владельца авто
+      include: [
+        {
+          model: Users,
+        },
+        {
+          model: CarsImages,
+        }
+      ], // Включая владельца авто
       order: [['createdAt', 'DESC']]
     });
 
   } catch (err) {
     console.error('Ошибка при получении всех автомобилей', err);
   }
-}
+}*/
+
+export const getUsersCars = async ({ number, page = 1, limit = 20 }) => {
+  try {
+    const whereCondition = number
+      ? {
+        car_number: {
+          [Op.like]: `%${number}%`,
+        },
+      }
+      : {};
+
+    // 🔹 Если есть поиск — без пагинации
+    if (number) {
+      const rows = await Cars.findAll({
+        where: whereCondition,
+        include: [
+          { model: Users },
+          { model: CarsImages },
+        ],
+        order: [['createdAt', 'DESC']],
+      });
+
+      return {
+        data: rows,
+        total: rows.length,
+        page: 1,
+        pages: 1,
+      };
+    }
+
+    // 🔹 Пагинация
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await Cars.findAndCountAll({
+      where: whereCondition,
+      include: [
+        { model: Users },
+        { model: CarsImages },
+      ],
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']],
+      distinct: true, // ❗ обязательно при include
+    });
+
+    return {
+      data: rows,
+      total: count,
+      page,
+      limit,
+      pages: Math.ceil(count / limit),
+    };
+  } catch (err) {
+    console.error('Ошибка при получении автомобилей', err);
+    throw err;
+  }
+};
+
 
 /*export const updateUserCar = async (chat_id, car_id, car_data) => {
   try {

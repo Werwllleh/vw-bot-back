@@ -247,20 +247,20 @@ router.post("/change-car-data", async (req, res) => {
 
 
 //site
-router.get("/cars", async (req, res) => {
+router.get('/cars', async (req, res) => {
   try {
+    const { number, page = 1, limit = 20 } = req.query;
 
-    const number = req.query.number;
+    const result = await getUsersCars({
+      number,
+      page: Number(page),
+      limit: Number(limit),
+    });
 
-    if (number) {
-      const cars = await getUsersCars(number);
-      return res.status(200).send(cars);
-    }
-
-    const cars = await getUsersCars();
-    return res.status(200).send(cars);
+    return res.status(200).json(result);
   } catch (e) {
-    res.status(500).send(e);
+    console.error(e);
+    res.status(500).json({ message: 'Ошибка сервера' });
   }
 });
 

@@ -81,32 +81,24 @@ export const deleteUser = async (chatId) => {
 export const getUserInfo = async (chatId) => {
   try {
     const userData = await Users.findOne({
-      where: {chatId: chatId},
-      include: Cars, CarsImages // Включаем связанные автомобили и фотографии
+      where: { chatId },
+      include: [
+        {
+          model: Cars,
+          include: [
+            {
+              model: CarsImages
+            }
+          ]
+        }
+      ]
     });
-
 
     if (userData === null) {
       return null; // Если пользователь не найден, возвращаем null
-    } else {
-      return {
-        id: userData.id,
-        chatId: userData.chatId,
-        name: userData.name,
-        telegram: userData.telegram,
-        instagram: userData.instagram,
-        color: userData.color,
-        cars: userData?.cars.length && userData?.cars.map((car) => ({
-          carId: car.id,
-          brand: car.car_brand,
-          model: car.car_model,
-          year: car.car_year,
-          number: car.car_number,
-          note: car.car_note,
-          drive2: car.car_drive2,
-        }))
-      };
     }
+
+    return userData;
   } catch (err) {
     console.error('Ошибка при получении инфо пользователя', err);
   }
