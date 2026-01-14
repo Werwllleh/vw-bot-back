@@ -1,4 +1,5 @@
 import {Cars, CarsImages, Users} from "../models.js";
+import {getRandomItems} from "../utils/utils.js";
 
 export const addUserCar = async (chatId, data) => {
   if (!data) throw new Error("Нет данных для добавления автомобиля");
@@ -50,6 +51,22 @@ export const getUserCar = async (number, carId) => {
 
   if (!number || !carId) throw new Error("Данные по авто не переданы");
 
+}
+
+export const otherCars = async (count) => {
+  const allCars = await Cars.findAll({
+    include: [
+      {
+        model: CarsImages,
+      }
+    ]
+  });
+
+  if (count) {
+    return getRandomItems(allCars, count);
+  }
+
+  return allCars;
 }
 
 export const updateUserCar = async (carId, data) => {

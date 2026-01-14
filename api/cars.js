@@ -11,7 +11,7 @@ import {
 } from "../db/cars-methods.js";
 import {authenticateAccessToken} from "../services/auth.js";
 import {validateData} from "./protect.js";
-import {addUserCar, getUserCar, updateUserCar} from "../services/cars.js";
+import {addUserCar, getUserCar, otherCars, updateUserCar} from "../services/cars.js";
 import {Cars, CarsImages} from "../models.js";
 
 const adminId = process.env.ADMIN;
@@ -170,6 +170,68 @@ router.post("/delete-car", authenticateAccessToken, async (req, res) => {
 
   } catch (e) {
     console.error("Ошибка в delete-car маршруте:", e);
+    return res.status(500).json({ message: "Ошибка сервера" });
+  }
+});
+
+router.post("/car-info", async (req, res) => {
+  try {
+
+    const {carId, carNumber} = req.body;
+
+    if (!carId && !carNumber) {
+      return res.status(400).json({ message: "Данные для поиска не переданы" });
+    }
+
+    try {
+      const carData = await getUserCar(carNumber, carId);
+
+      if (!carData) {
+        return res.status(404).json({
+          message: "Авто не найдено",
+        });
+      }
+
+      return res.status(200).json(carData);
+
+    } catch (error) {
+      console.error("Ошибка при поиске авто:", error);
+      return res.status(500).json({
+        message: "Произошла ошибка, попробуйте позже",
+      });
+    }
+
+  } catch (e) {
+    console.error("Ошибка в car-info маршруте:", e);
+    return res.status(500).json({ message: "Ошибка сервера" });
+  }
+})
+
+router.post("/other-cars", async (req, res) => {
+  try {
+
+    const {count} = req.body;
+
+    try {
+      const otherCarsData = await otherCars(count);
+
+      if (!otherCarsData) {
+        return res.status(404).json({
+          message: "Авто не найдено",
+        });
+      }
+
+      return res.status(200).json(otherCarsData);
+
+    } catch (error) {
+      console.error("Ошибка при поиске автомобилей:", error);
+      return res.status(500).json({
+        message: "Произошла ошибка, попробуйте позже",
+      });
+    }
+
+  } catch (e) {
+    console.error("Ошибка в other-cars маршруте:", e);
     return res.status(500).json({ message: "Ошибка сервера" });
   }
 })
