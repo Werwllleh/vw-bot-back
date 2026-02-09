@@ -104,7 +104,7 @@ export const getUsersCars = async ({ number, page = 1, limit = 20 }) => {
   try {
     const whereCondition = number
       ? {
-        car_number: {
+        number: {
           [Op.like]: `%${number}%`,
         },
       }
