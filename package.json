@@ -13,12 +13,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "sequelize-cli": "^6.6.5"
   },
   "dependencies": {
     "@telegram-auth/server": "^1.0.4",
-    "axios": "^1.12.2",
-    "body-parser": "^1.20.3",
+    "axios": "1.15.2",
+    "body-parser": "2.2.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "cross-env": "^10.1.0",
@@ -33,7 +34,7 @@
     "mv": "^2.1.1",
     "node-telegram-bot-api": "^0.66.0",
     "pg": "^8.13.0",
-    "sequelize": "^6.37.4",
+    "sequelize": "6.37.8",
     "sharp": "^0.33.5",
     "uuid": "^10.0.0"
   }

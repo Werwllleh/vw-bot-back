@@ -33,7 +33,6 @@ export const Cars = sequelize.define('cars', {
   timestamps: true
 });
 
-
 // Установка связи между Users и Cars
 Users.hasMany(Cars, {
   foreignKey: 'chatId',
@@ -51,15 +50,27 @@ export const Partners = sequelize.define('partners', {
   title: {type: DataTypes.STRING, allowNull: false},
   slug: {type: DataTypes.STRING, allowNull: false},
   description: {type: DataTypes.TEXT, allowNull: false},
-  links: {type: DataTypes.TEXT, allowNull: true},
-  phones: {type: DataTypes.TEXT, allowNull: true},
+  instagram: {type: DataTypes.STRING, allowNull: true},
+  telegram: {type: DataTypes.STRING, allowNull: true},
+  whatsapp: {type: DataTypes.STRING, allowNull: true},
+  max: {type: DataTypes.STRING, allowNull: true},
+  vk: {type: DataTypes.STRING, allowNull: true},
+  phones: {type: DataTypes.STRING, allowNull: false},
   site: {type: DataTypes.STRING, allowNull: true},
-  organizationLink: {type: DataTypes.STRING, allowNull: true},
-  addressText: {type: DataTypes.STRING, allowNull: true},
-  addressCoordinates: {type: DataTypes.TEXT, allowNull: true},
+  yandex_profile: {type: DataTypes.STRING, allowNull: true},
+  address: {type: DataTypes.STRING, allowNull: true},
+  coordinates: {type: DataTypes.STRING, allowNull: true},
   active: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-  banned: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-  banReason: {type: DataTypes.STRING, allowNull: true},
+  banned: {type: DataTypes.BOOLEAN, defaultValue: false},
+  ban_reason: {type: DataTypes.STRING, allowNull: true},
+  chatId: {
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    references: {
+      model: Users,
+      key: 'chatId'
+    }
+  }
 }, {
   timestamps: true
 });
@@ -87,6 +98,17 @@ export const PartnerCategoryConnect = sequelize.define('partnerCategoryConnect',
 // Настройка ассоциаций
 Partners.belongsToMany(PartnersCategories, {through: PartnerCategoryConnect});
 PartnersCategories.belongsToMany(Partners, {through: PartnerCategoryConnect});
+
+// Установка связи между Users и Partners
+Users.hasMany(Partners, {
+  foreignKey: 'chatId',
+  sourceKey: 'chatId',
+});
+
+Partners.belongsTo(Users, {
+  foreignKey: 'chatId',
+  targetKey: 'chatId',
+});
 
 
 export const Roles = sequelize.define('roles', {

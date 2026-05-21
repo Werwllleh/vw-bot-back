@@ -15,7 +15,6 @@ import partnersRouter from './api/partners.js';
 import protectRouter from './api/protect.js';
 
 import logger from './functions/logger.js';
-import {keyBoard} from "./keyboards.js";
 import {} from "./db/user-methods.js";
 import {getUserInfo} from "./services/users.js";
 import {authenticateAccessToken} from "./services/auth.js";
@@ -31,37 +30,37 @@ const app = express();
 export const bot = new TelegramBot(token, {polling: true});
 
 const allowedOrigins = [
-  process.env.URL_TEST,
-  process.env.URL_FRONT,
-  process.env.URL_FRONT_QA,
-  process.env.URL_BOT,
-  process.env.URL_CMS,
-];
-
-app.use(cors({
-  origin: [
+    process.env.URL_TEST,
     process.env.URL_FRONT,
     process.env.URL_FRONT_QA,
     process.env.URL_BOT,
     process.env.URL_CMS,
-    process.env.URL_TEST,
-  ],
-  credentials: true, // Разрешить отправку кук
+];
+
+app.use(cors({
+    origin: [
+        process.env.URL_FRONT,
+        process.env.URL_FRONT_QA,
+        process.env.URL_BOT,
+        process.env.URL_CMS,
+        process.env.URL_TEST,
+    ],
+    credentials: true, // Разрешить отправку кук
 }));
 
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  // console.log(`Request origin: ${origin}`); // Логируем origin для диагностики
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    // console.log(`CORS allowed for origin: ${origin}`); // Логируем успешное добавление заголовка
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204); // Возвращаем preflight-ответ
-  }
-  next();
+    const origin = req.headers.origin;
+    // console.log(`Request origin: ${origin}`); // Логируем origin для диагностики
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        // console.log(`CORS allowed for origin: ${origin}`); // Логируем успешное добавление заголовка
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(204); // Возвращаем preflight-ответ
+    }
+    next();
 });
 
 
@@ -73,7 +72,7 @@ app.use(fileUpload({}));
 app.listen(port, () => console.log(`App is listening on port ${port}.`));
 
 app.get("/api", async (req, res) => {
-  return res.json("work");
+    return res.json("work");
 });
 
 app.use("/api/car", express.static("img/cars"));
@@ -93,57 +92,7 @@ app.use('/api', authenticateAccessToken, protectRouter);
 
 
 const start = async () => {
-  await dbConnect(); // Подключаем базу данных
-
-  await bot.setMyCommands([
-    {command: "/start", description: "Обновление/перезапуск бота"},
-    // {command: "/info", description: "О клубе"},
-    {command: "/partners", description: "Партнеры"},
-    {command: "/meet", description: "Встреча клуба"},
-  ])
-
-  await bot.on("message", async (msg) => {
-
-    try {
-
-
-      const text = msg.text;
-      const chatId = msg.chat.id;
-
-      /*if (String(chatId) !== String(adminId)) {
-        return await bot.sendMessage(chatId, "Привет! Бот уже совсем скоро заработает, еще чуть-чуть");
-      }*/
-
-      if (text.toLowerCase() === "/status") {
-        logger('Статус пользователя', JSON.stringify(msg))
-        return await bot.sendMessage(chatId, 'Спасибо, информация передана!');
-      }
-
-      const userData = await getUserInfo(chatId);
-
-      if (userData) {
-        if (text.toLowerCase() === "/start") {
-          return await bot.sendMessage(chatId, 'Привет!', keyBoard.menu);
-        }
-
-        /*if (text.toLowerCase() === "/info") {
-          return await bot.sendMessage(chatId, 'О клубе', keyBoard.menu);
-        }*/
-        if (text.toLowerCase() === "/partners") {
-          return await bot.sendMessage(chatId, 'Ознакомиться с клубными партнерами можно тут', keyBoard.partners);
-        }
-        if (text.toLowerCase() === "/meet") {
-          return await bot.sendMessage(chatId, 'Узнать информацию о встрече клуба', keyBoard.meet);
-        }
-      } else {
-        return await bot.sendMessage(chatId, 'Привет! Пожалуйста пройди регистрацию для полноценного использования', keyBoard.reg);
-      }
-
-    } catch (err) {
-      logger("Не отработал сценарий бота", err);
-      console.log(err);
-    }
-  })
+    await dbConnect(); // Подключаем базу данных
 }
 
 start();
