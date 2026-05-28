@@ -76,7 +76,7 @@ app.get("/api", async (req, res) => {
 });
 
 app.use("/api/car", express.static("img/cars"));
-app.use("/api/image", express.static("upload/image"));
+app.use("/api/image", express.static(process.env.IMAGES_DIR));
 app.use("/api/bot", express.static("img/bot-data"));
 
 
