@@ -10,9 +10,10 @@ export const fileProcessing = async (file) => {
   const fileMimetype = file.mimetype || '';
   const fileFormat = (file.name || '').toLowerCase().trim().split('.').pop() || '';
 
-  const imagesDir = path.resolve('upload/image');
-  const applicationsDir = path.resolve('upload/application');
-  const tempDir = path.resolve('upload/temp');
+
+  const imagesDir = path.resolve(process.env.IMAGES_DIR);
+  const applicationsDir = path.resolve(process.env.APPLICATIONS_DIR);
+  const tempDir = path.resolve(process.env.TEMP_DIR);
 
   if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, {recursive: true});
   if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, {recursive: true});
