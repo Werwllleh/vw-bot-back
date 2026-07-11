@@ -44,11 +44,6 @@ export const authenticateAccessToken = async (req, res, next) => {
     const decoded = await verifyToken(accessToken);
     req.user = decoded;
 
-    console.log(req.user)
-    console.log('----------------------------')
-    console.log(decoded)
-    console.log('-- -- -- --- --- -- -- --- --- -- ----')
-
     return next();
   } catch (err) {
     if (err.name === 'TokenExpiredError' || err.code === 'ERR_JWT_EXPIRED') {
