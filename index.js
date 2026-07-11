@@ -12,6 +12,7 @@ import userRouter from './api/users.js';
 import rolesRouter from './api/roles.js';
 import uploadRouter from './api/upload.js';
 import partnersRouter from './api/partners.js';
+import cmsRouter from './api/cms.js';
 import protectRouter from './api/protect.js';
 
 import logger from './functions/logger.js';
@@ -40,7 +41,7 @@ const allowedOrigins = [
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin) return callback(null, true);
-        
+
         if (allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
@@ -53,8 +54,8 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
-app.use(express.json());
 app.use(cookieParser());
+app.use(express.json());
 
 app.use(fileUpload({}));
 
@@ -75,6 +76,7 @@ app.use("/api", userRouter);
 app.use("/api", rolesRouter);
 app.use("/api", uploadRouter);
 app.use("/api", partnersRouter);
+app.use("/api", cmsRouter);
 // app.use("/api", protectRouter);
 
 app.use('/api', authenticateAccessToken, protectRouter);

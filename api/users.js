@@ -152,6 +152,28 @@ router.post("/update-user", authenticateAccessToken, async (req, res) => {
   }
 })
 
+router.post("/attach-company", authenticateAccessToken, async (req, res) => {
+  try {
+
+    const hashData = await validateData(req, res);
+    const chatId = hashData.chatId;
+
+    if (!chatId) {
+      return res.status(500).json({
+        message: 'Ошибка при прикреплении компании',
+      });
+    }
+
+    const checkUser = await getUserInfo(chatId);
+
+  } catch (err) {
+    logger('Ошибка при прикреплении компании', err);
+    return res.status(500).json({
+      message: 'Ошибка при прикреплении компании',
+    });
+  }
+})
+
 router.post("/about-user", async (req, res) => {
   try {
 

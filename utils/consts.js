@@ -551,3 +551,6 @@ export const AUTOMOBILES = [
   { brand: 'lamborghini', model: 'urus' },
 ];
 
+
+export const CMS_API = process.env.CMS_API
+export const CMS_API_TOKEN = process.env.CMS_PAYLOAD_SECRET;

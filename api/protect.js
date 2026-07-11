@@ -84,6 +84,8 @@ protectRouter.post('/protect/update-user', async (req, res) => {
   const userChatId = decoded.chatId;
   const {data} = req.body;
 
+
+
   const update = await updateUserInfo(userChatId, data);
 
   return res.status(update.status).json({ text: update.text });

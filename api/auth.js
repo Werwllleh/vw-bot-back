@@ -2,6 +2,7 @@ import express from "express";
 import {AuthDataValidator} from "@telegram-auth/server";
 import {objectToAuthDataMap} from "@telegram-auth/server/utils";
 import {generateAccessToken, generateRefreshToken, verifyToken} from "../services/auth.js" ;
+import {CMS_API_TOKEN} from "../utils/consts.js";
 
 
 const router = express.Router();
@@ -27,6 +28,7 @@ router.post('/auth/login', async (req, res) => {
     const jwt = {
       chatId: result.id,
       photo: result.photo_url,
+      cms: CMS_API_TOKEN
     }
 
     // Создание токенов
@@ -43,7 +45,7 @@ router.post('/auth/login', async (req, res) => {
     res.cookie('accessToken', accessToken, {
       domain: process.env.URL_COOKIE_DOMAIN,
       sameSite: 'strict',
-      maxAge: 60 * 60 * 1000, // 15 мин
+      maxAge: 24 * 60 * 60 * 1000, // 1 день
     });
 
     return res.status(200).send();
@@ -79,7 +81,7 @@ router.post('/auth/refresh-token', async (req, res) => {
     res.cookie('accessToken', accessToken, {
       domain: process.env.URL_COOKIE_DOMAIN,
       sameSite: 'strict',
-      maxAge: 2 * 60 * 1000,
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
 
@@ -108,7 +110,7 @@ router.post('/auth/access-token', async (req, res) => {
     res.cookie('accessToken', accessToken, {
       domain: process.env.URL_COOKIE_DOMAIN,
       sameSite: 'strict',
-      maxAge: 2 * 60 * 1000,
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     return res.status(200).send();

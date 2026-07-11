@@ -232,3 +232,54 @@ PartnersImages.belongsTo(Partners, {
   foreignKey: 'partnerId', // ссылается на поле partnerId в Images
   targetKey: 'id'      // ссылается на id в Partners
 });
+
+export const UserCompanies = sequelize.define(
+  'user_companies',
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      unique: true,
+      autoIncrement: true,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+
+      references: {
+        model: 'users',
+        key: 'id',
+      },
+
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
+    },
+    companyId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: false,
+    indexes: [
+      {
+        unique: true,
+        fields: ['userId', 'companyId'],
+      },
+      {
+        fields: ['companyId'],
+      },
+    ],
+  },
+);
+
+Users.hasMany(UserCompanies, {
+  foreignKey: 'userId',
+  as: 'companies',
+  onDelete: 'CASCADE',
+});
+
+UserCompanies.belongsTo(Users, {
+  foreignKey: 'userId',
+  as: 'user',
+});

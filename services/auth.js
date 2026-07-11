@@ -33,27 +33,6 @@ export const verifyToken = async (token) => {
   }
 };
 
-/*export const authenticateAccessToken = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader?.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'missing token' });
-  }
-
-  const token = authHeader.split(' ')[1];
-
-  try {
-    const decoded = await verifyToken(token);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    if (err.name === 'TokenExpiredError') {
-      return res.status(401).json({ error: 'jwt expired' });
-    }
-    return res.status(403).json({ error: 'invalid token' });
-  }
-};*/
-
 export const authenticateAccessToken = async (req, res, next) => {
   try {
     const accessToken = req.cookies?.accessToken;

@@ -4,6 +4,7 @@ const dbConnect = async () => {
   try {
     await connectDB.authenticate();
     // connectDB.sync({ alter: true})
+    // connectDB.sync({})
     connectDB.sync()
       .then(() => console.log('Tables created/updated successfully'))
       .catch((error) => console.error('Error creating tables:', error));
