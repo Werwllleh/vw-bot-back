@@ -12,13 +12,14 @@ import userRouter from './api/users.js';
 import rolesRouter from './api/roles.js';
 import uploadRouter from './api/upload.js';
 import partnersRouter from './api/partners.js';
-import cmsRouter from './api/cms.js';
+import cmsRouter from "./api/cms.js";
 import protectRouter from './api/protect.js';
 
 import logger from './functions/logger.js';
 import {} from "./db/user-methods.js";
 import {getUserInfo} from "./services/users.js";
 import {authenticateAccessToken} from "./services/auth.js";
+
 
 const token = process.env.TOKEN;
 const port = process.env.PORT;

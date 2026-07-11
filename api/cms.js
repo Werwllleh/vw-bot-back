@@ -3,13 +3,13 @@ import {authenticateAccessToken} from "../services/auth.js";
 import {validateData} from "./protect.js";
 import {UserCompanies, Users} from "../models.js";
 import axios from "axios";
-import {CMS_API, CMS_API_TOKEN} from "../utils/consts.js";
+import {CMS_API} from "../utils/consts.js";
 
 
-const router = express.Router();
+const cmsRouter = express.Router();
 
-router.post(
-  '/attach-company',
+cmsRouter.post(
+  '/attach-user-company',
   authenticateAccessToken,
   async (req, res) => {
 
@@ -183,4 +183,4 @@ router.post(
   },
 );
 
-export default router;
+export default cmsRouter;

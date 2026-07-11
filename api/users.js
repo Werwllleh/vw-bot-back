@@ -152,7 +152,7 @@ router.post("/update-user", authenticateAccessToken, async (req, res) => {
   }
 })
 
-router.post("/attach-company", authenticateAccessToken, async (req, res) => {
+/*router.post("/attach-company", authenticateAccessToken, async (req, res) => {
   try {
 
     const hashData = await validateData(req, res);
@@ -172,7 +172,7 @@ router.post("/attach-company", authenticateAccessToken, async (req, res) => {
       message: 'Ошибка при прикреплении компании',
     });
   }
-})
+})*/
 
 router.post("/about-user", async (req, res) => {
   try {
