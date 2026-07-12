@@ -1,4 +1,4 @@
-import {Users, Cars} from '../models.js';
+import {Users, Cars, UserCompanies} from '../models.js';
 
 export const updateUserInfo = async (chatId, values) => {
   try {

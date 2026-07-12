@@ -1,4 +1,5 @@
 import {CMS_API, CMS_API_TOKEN} from "../utils/consts.js";
+import axios from "axios";
 
 export const createCmsPartner = async (data) => {
   const response = await fetch(
@@ -31,4 +32,14 @@ export const createCmsPartner = async (data) => {
   }
 
   return result?.doc ?? result;
+};
+
+export const getUserCompanyInfo = async (id) => {
+  try {
+    const response = await axios.get(`${CMS_API}/api/partner/${id}`);
+    return response?.data || null;
+  } catch (error) {
+    console.error(`Ошибка запроса получения компании ${id}:`, error.message);
+    return null;
+  }
 };

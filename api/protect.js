@@ -3,6 +3,9 @@ import {authenticateAccessToken, verifyToken} from "../services/auth.js";
 import {updateUserInfo} from "../db/user-methods.js";
 import {getUserInfo} from "../services/users.js";
 import {updateUserCar} from "../services/cars.js";
+import axios from "axios";
+import {CMS_API} from "../utils/consts.js";
+import {getUserCompanyInfo} from "../services/cms.js";
 
 
 export const protectRouter = express.Router();
@@ -14,18 +17,17 @@ protectRouter.use('/protect', (req, res, next) => {
 });
 
 
-
 export const validateData = async (req, res) => {
   const accessToken = req.cookies.accessToken;
 
   if (!accessToken) {
-    return res.status(401).json({ error: 'jwt expired' });
+    return res.status(401).json({error: 'jwt expired'});
   }
 
   const decoded = await verifyToken(accessToken);
 
   if (!decoded) {
-    return res.status(401).json({ error: 'jwt invalid' });
+    return res.status(401).json({error: 'jwt invalid'});
   }
 
   return decoded;
@@ -41,30 +43,31 @@ protectRouter.post('/protect/user', async (req, res) => {
   const userData = await getUserInfo(hashData.chatId);
 
   if (!userData) {
-    return res.status(404).json({ error: 'User not found' });
+    return res.status(404).json({error: 'User not found'});
   }
 
-  res.status(200).json({ user: { data: userData, userPhoto: hashData.photo } });
+  let userCompanies = []
 
-  /*const accessToken = req.cookies.accessToken;
-
-  if (!accessToken) {
-    return res.status(401).json({ error: 'jwt expired' });
+  if (userData?.companies?.length) {
+    for (const company of userData.companies) {
+      try {
+        const result = await getUserCompanyInfo(company.companyId);
+        if (result) {
+          userCompanies.push(result);
+        }
+      } catch (error) {
+        console.error(`Ошибка при получении данных компании ${company.id}:`, error);
+      }
+    }
   }
 
-  const decoded = await verifyToken(accessToken);
-
-  if (!decoded) {
-    return res.status(401).json({ error: 'jwt invalid' });
-  }
-
-  const userData = await getUserInfo(decoded.chatId);
-
-  if (!userData) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-
-  res.status(200).json({ user: { data: userData, userPhoto: decoded.photo } });*/
+  res.status(200).json({
+    user: {
+      data: userData,
+      userPhoto: hashData.photo,
+      companies: userCompanies || []
+    }
+  });
 });
 
 protectRouter.post('/protect/update-user', async (req, res) => {
@@ -72,23 +75,22 @@ protectRouter.post('/protect/update-user', async (req, res) => {
   const {accessToken} = req.cookies;
 
   if (!accessToken) {
-    return res.status(401).json({ error: 'jwt expired' });
+    return res.status(401).json({error: 'jwt expired'});
   }
 
   const decoded = await verifyToken(accessToken);
 
   if (!decoded) {
-    return res.status(401).json({ error: 'jwt invalid' });
+    return res.status(401).json({error: 'jwt invalid'});
   }
 
   const userChatId = decoded.chatId;
   const {data} = req.body;
 
 
-
   const update = await updateUserInfo(userChatId, data);
 
-  return res.status(update.status).json({ text: update.text });
+  return res.status(update.status).json({text: update.text});
 });
 
 /*protectRouter.post('/protect/change-car-info', async (req, res) => {

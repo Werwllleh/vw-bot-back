@@ -1,4 +1,4 @@
-import {Cars, CarsImages, Users} from "../models.js";
+import {Cars, CarsImages, UserCompanies, Users} from "../models.js";
 import {randomColor} from "../functions/randomColor.js";
 import {sendIndividualMessage} from "../functions/sendIndividualMessage.js";
 import logger from "../functions/logger.js";
@@ -87,9 +87,13 @@ export const getUserInfo = async (chatId) => {
           model: Cars,
           include: [
             {
-              model: CarsImages
+              model: CarsImages,
             }
           ]
+        },
+        {
+          model: UserCompanies,
+          as: 'companies',
         }
       ]
     });
