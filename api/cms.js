@@ -216,18 +216,6 @@ cmsRouter.patch(
         });
       }
 
-      /*
-       * Frontend отправляет:
-       *
-       * {
-       *   id: 15,
-       *   data: {
-       *     title: "...",
-       *     description: "...",
-       *     ...
-       *   }
-       * }
-       */
       const {
         id: rawCompanyId,
         data,
@@ -254,10 +242,7 @@ cmsRouter.patch(
         });
       }
 
-      /*
-       * Проверяем, что эта компания действительно
-       * принадлежит авторизованному пользователю.
-       */
+      /* Проверяем, что эта компания действительно принадлежит авторизованному пользователю.*/
       const userCompany = await UserCompanies.findOne({
         where: {
           userId: user.id,
