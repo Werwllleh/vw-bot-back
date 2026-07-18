@@ -136,7 +136,10 @@ export const getUsersCars = async ({ number, page = 1, limit = 20 }) => {
       where: whereCondition,
       include: [
         { model: Users },
-        { model: CarsImages },
+        {
+          model: CarsImages,
+          required: true
+        },
       ],
       limit,
       offset,

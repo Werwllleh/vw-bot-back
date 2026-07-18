@@ -4,6 +4,7 @@ import {validateData} from "./protect.js";
 import {UserCompanies, Users} from "../models.js";
 import axios from "axios";
 import {CMS_API} from "../utils/consts.js";
+import {cleanPhone} from "../utils/utils.js";
 
 
 const cmsRouter = express.Router();
@@ -461,7 +462,7 @@ cmsRouter.patch(
                 : {}
             ),
 
-            phone: item.phone.trim(),
+            phone: cleanPhone(item.phone.trim()),
           }))
         : [];
 
@@ -489,7 +490,8 @@ cmsRouter.patch(
 
       const cmsPayload = {
         title: title.trim(),
-
+        on_check: true,
+        active: false,
         description: description.trim(),
 
         categories: categoryIds,

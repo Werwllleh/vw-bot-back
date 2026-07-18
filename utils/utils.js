@@ -13,3 +13,7 @@ export function getRandomItems(arr, count = 10) {
 
   return result;
 }
+
+export const cleanPhone = (phone) => {
+  return phone.replace(/\D/g, '');
+};
