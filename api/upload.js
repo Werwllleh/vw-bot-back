@@ -53,7 +53,7 @@ router.post("/upload", authenticateAccessToken, async (req, res) => {
   } catch (err) {
     console.log(err)
     logger("Ошибка загрузки изображения", err);
-    res.status(500).send(err);
+    res.status(500).json({message: 'Ошибка загрузки изображения'});
   }
 });
 

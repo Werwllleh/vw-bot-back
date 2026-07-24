@@ -4,11 +4,7 @@ import logger from "../functions/logger.js";
 import {v4 as uuidv4} from "uuid";
 import fs from "fs";
 import path from "path";
-import {
-  deleteUserCar,
-  getCarInfo,
-  getUsersCars,
-} from "../db/cars-methods.js";
+import {getUsersCars} from "../db/cars-methods.js";
 import {authenticateAccessToken} from "../services/auth.js";
 import {validateData} from "./protect.js";
 import {addUserCar, getUserCar, otherCars, updateUserCar} from "../services/cars.js";
@@ -237,25 +233,6 @@ router.post("/other-cars", async (req, res) => {
 })
 
 
-/*router.post("/delete-car", async (req, res) => {
-  try {
-    const chatId = req.body.chatId;
-    const carId = req.body.carId;
-
-    if (chatId && carId) {
-      await deleteUserCar(chatId, carId)
-        .then(() => {
-          return res.status(200).send("OK")
-        })
-        .catch(() => {
-          return res.status(500).send("Ошибка при удалении авто")
-        })
-    }
-  } catch (e) {
-    return res.status(500).send(e);
-  }
-});*/
-
 router.get("/register-cars", async (req, res) => {
   try {
     return res.json({
@@ -263,47 +240,8 @@ router.get("/register-cars", async (req, res) => {
       models: MODELS
     });
   } catch (e) {
-    res.status(500).send(e);
-  }
-});
-
-router.post("/get-car-info", async (req, res) => {
-  try {
-    const car_number = req.body.car_number;
-    const car = await getCarInfo(car_number);
-
-    console.log(car)
-    return res.status(200).send(car);
-  } catch (e) {
-    res.status(500).send(e);
-  }
-});
-
-router.post("/get-users-cars", async (req, res) => {
-  try {
-    const cars = await getUsersCars();
-
-    return res.status(200).send(cars);
-  } catch (e) {
-    res.status(500).send(e);
-  }
-});
-
-router.post("/change-car-data", async (req, res) => {
-  try {
-    const chatId = req.body.chatId;
-    const carId = req.body.carId;
-    const carData = req.body.data;
-
-    if (chatId && carId && carData) {
-      const updateCarStatus = await updateUserCar(chatId, carData);
-
-      res.status(updateCarStatus.status).send(updateCarStatus.text);
-    }
-
-
-  } catch (e) {
-    return res.status(500).send(e);
+    console.error(e);
+    res.status(500).json({message: 'Ошибка сервера'});
   }
 });
 

@@ -1,8 +1,7 @@
 import express from "express";
 import logger from "../functions/logger.js";
-import {getAllUsers, updateUserInfo} from "../db/user-methods.js";
-import {authenticateAccessToken, verifyToken} from "../services/auth.js";
-import {createUser, getUserInfo, deleteUser, sendUserMessage, userCarsData, updateUser,} from "../services/users.js";
+import {authenticateAccessToken} from "../services/auth.js";
+import {createUser, getUserInfo, userCarsData, updateUser} from "../services/users.js";
 import {validateData} from "./protect.js";
 
 const router = express.Router();
@@ -152,81 +151,20 @@ router.post("/update-user", authenticateAccessToken, async (req, res) => {
   }
 })
 
-/*router.post("/attach-company", authenticateAccessToken, async (req, res) => {
+// Данные только своего профиля — по токену, без чтения chatId из тела
+router.post("/about-user", authenticateAccessToken, async (req, res) => {
   try {
-
     const hashData = await validateData(req, res);
-    const chatId = hashData.chatId;
 
-    if (!chatId) {
-      return res.status(500).json({
-        message: 'Ошибка при прикреплении компании',
-      });
+    if (!hashData?.chatId) {
+      return res.status(401).json({message: 'Не авторизован'});
     }
 
-    const checkUser = await getUserInfo(chatId);
-
+    const data = await getUserInfo(hashData.chatId);
+    return res.status(200).json(data);
   } catch (err) {
-    logger('Ошибка при прикреплении компании', err);
-    return res.status(500).json({
-      message: 'Ошибка при прикреплении компании',
-    });
-  }
-})*/
-
-router.post("/about-user", async (req, res) => {
-  try {
-
-    if (req.headers?.authorization) {
-
-      const accessToken = req.headers.authorization.split('Bearer ')[1];
-
-      const decoded = await verifyToken(accessToken);
-
-      if (decoded.chatId) {
-        const data = await getUserInfo(decoded.chatId);
-        return res.status(200).send(data);
-      }
-
-    } else {
-      const chatId = req.body.chatId;
-
-      const data = await getUserInfo(chatId);
-      return res.status(200).send(data);
-    }
-  } catch (err) {
-    return res.status(500).send(err);
-  }
-})
-
-router.post("/delete-user", async (req, res) => {
-  try {
-    const chatId = req.body.chatId;
-    const data = await deleteUser(chatId);
-    return res.status(200).send(data);
-  } catch (err) {
-    return res.status(500).send(err);
-  }
-})
-
-router.post("/all-users", async (req, res) => {
-  try {
-    const data = await getAllUsers();
-    return res.status(200).send(data);
-  } catch (err) {
-    return res.status(500).send(err);
-  }
-})
-
-router.post("/send-message", async (req, res) => {
-  try {
-    const chatId = req.body.chatId;
-    const message = req.body.message;
-
-    const data = await sendUserMessage(chatId, message);
-    return res.status(200).send(data);
-  } catch (err) {
-    return res.status(500).send(err);
+    console.error('Ошибка получения данных пользователя', err);
+    return res.status(500).json({message: 'Ошибка сервера'});
   }
 })
 

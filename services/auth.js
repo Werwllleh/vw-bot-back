@@ -10,7 +10,7 @@ export const generateAccessToken = async (payload) => {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('1d') // Срок действия: 15 минут
+    .setExpirationTime('1h') // Срок действия access-токена: 1 час
     .sign(secretKey);
 };
 

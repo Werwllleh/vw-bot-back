@@ -9,15 +9,13 @@ import cookieParser from "cookie-parser";
 import authRouter from './api/auth.js';
 import carsRouter from './api/cars.js';
 import userRouter from './api/users.js';
-import rolesRouter from './api/roles.js';
 import uploadRouter from './api/upload.js';
 import partnersRouter from './api/partners.js';
 import cmsRouter from "./api/cms.js";
 import protectRouter from './api/protect.js';
+import {apiLimiter} from './functions/rateLimit.js';
 
 import logger from './functions/logger.js';
-import {} from "./db/user-methods.js";
-import {getUserInfo} from "./services/users.js";
 import {authenticateAccessToken} from "./services/auth.js";
 
 
@@ -27,6 +25,10 @@ const port = process.env.PORT;
 process.env["NTBA_FIX_350"] = 1;
 
 const app = express();
+
+// Приложение работает за nginx — доверяем первому прокси,
+// чтобы rate-limit и логика видели реальный IP клиента (X-Forwarded-For).
+app.set('trust proxy', 1);
 
 // const bot = new Bot(token);
 export const bot = new TelegramBot(token, {polling: true});
@@ -71,14 +73,15 @@ app.use("/api/image", express.static(process.env.IMAGES_DIR));
 app.use("/api/bot", express.static("img/bot-data"));
 
 
+// Общий rate-limit на всё API (кроме статики выше)
+app.use("/api", apiLimiter);
+
 app.use("/api", authRouter);
 app.use("/api", carsRouter);
 app.use("/api", userRouter);
-app.use("/api", rolesRouter);
 app.use("/api", uploadRouter);
 app.use("/api", partnersRouter);
 app.use("/api", cmsRouter);
-// app.use("/api", protectRouter);
 
 app.use('/api', authenticateAccessToken, protectRouter);
 

@@ -2,12 +2,31 @@ import express from "express";
 import {AuthDataValidator} from "@telegram-auth/server";
 import {objectToAuthDataMap} from "@telegram-auth/server/utils";
 import {generateAccessToken, generateRefreshToken, verifyToken} from "../services/auth.js" ;
-import {CMS_API_TOKEN} from "../utils/consts.js";
+import {authLimiter} from "../functions/rateLimit.js";
 
 
 const router = express.Router();
 
-router.post('/auth/login', async (req, res) => {
+// Базовые опции кук: httpOnly (недоступны из JS → защита от кражи через XSS),
+// secure (только по HTTPS), sameSite strict. domain — общий для поддоменов *.vagclub21.
+const baseCookieOptions = {
+  domain: process.env.URL_COOKIE_DOMAIN,
+  httpOnly: true,
+  secure: true,
+  sameSite: 'strict',
+};
+
+const refreshCookieOptions = {
+  ...baseCookieOptions,
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 дней
+};
+
+const accessCookieOptions = {
+  ...baseCookieOptions,
+  maxAge: 60 * 60 * 1000, // 1 час
+};
+
+router.post('/auth/login', authLimiter, async (req, res) => {
   try {
 
     const {data} = req.body;
@@ -28,7 +47,6 @@ router.post('/auth/login', async (req, res) => {
     const jwt = {
       chatId: result.id,
       photo: result.photo_url,
-      cms: CMS_API_TOKEN
     }
 
     // Создание токенов
@@ -36,17 +54,8 @@ router.post('/auth/login', async (req, res) => {
     const refreshToken = await generateRefreshToken(jwt);
 
     // Отправка токенов
-    res.cookie('refreshToken', refreshToken, {
-      domain: process.env.URL_COOKIE_DOMAIN,
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 дней
-    });
-
-    res.cookie('accessToken', accessToken, {
-      domain: process.env.URL_COOKIE_DOMAIN,
-      sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000, // 1 день
-    });
+    res.cookie('refreshToken', refreshToken, refreshCookieOptions);
+    res.cookie('accessToken', accessToken, accessCookieOptions);
 
     return res.status(200).send();
   } catch (err) {
@@ -55,7 +64,7 @@ router.post('/auth/login', async (req, res) => {
   }
 });
 
-router.post('/auth/refresh-token', async (req, res) => {
+router.post('/auth/refresh-token', authLimiter, async (req, res) => {
   try {
 
     const {refreshToken} = req.cookies;
@@ -67,23 +76,16 @@ router.post('/auth/refresh-token', async (req, res) => {
     // Проверка Refresh Token
     const decoded = await verifyToken(refreshToken);
 
-    // Создание новых токенов
-    const accessToken = await generateAccessToken(decoded);
-    const newRefreshToken = await generateRefreshToken(decoded);
+    // Ротация: только полезная нагрузка, без служебных полей старого токена (iat/exp)
+    const payload = {chatId: decoded.chatId, photo: decoded.photo};
+
+    // Создание новых токенов (ротация refresh)
+    const accessToken = await generateAccessToken(payload);
+    const newRefreshToken = await generateRefreshToken(payload);
 
     // Обновление Refresh Token в куки
-    res.cookie('refreshToken', newRefreshToken, {
-      domain: process.env.URL_COOKIE_DOMAIN,
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 дней
-    });
-
-    res.cookie('accessToken', accessToken, {
-      domain: process.env.URL_COOKIE_DOMAIN,
-      sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-
+    res.cookie('refreshToken', newRefreshToken, refreshCookieOptions);
+    res.cookie('accessToken', accessToken, accessCookieOptions);
 
     return res.status(200).send();
   } catch (err) {
@@ -92,7 +94,7 @@ router.post('/auth/refresh-token', async (req, res) => {
   }
 });
 
-router.post('/auth/access-token', async (req, res) => {
+router.post('/auth/access-token', authLimiter, async (req, res) => {
   try {
 
     const {refreshToken} = req.cookies;
@@ -104,14 +106,11 @@ router.post('/auth/access-token', async (req, res) => {
     // Проверка Refresh Token
     const decoded = await verifyToken(refreshToken);
 
-    // Создание новых токенов
-    const accessToken = await generateAccessToken(decoded);
+    // Создание нового access-токена
+    const payload = {chatId: decoded.chatId, photo: decoded.photo};
+    const accessToken = await generateAccessToken(payload);
 
-    res.cookie('accessToken', accessToken, {
-      domain: process.env.URL_COOKIE_DOMAIN,
-      sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000,
-    });
+    res.cookie('accessToken', accessToken, accessCookieOptions);
 
     return res.status(200).send();
   } catch (err) {
@@ -123,18 +122,9 @@ router.post('/auth/access-token', async (req, res) => {
 router.post('/auth/logout', async (req, res) => {
   try {
 
-    // Обновление Refresh Token в куки
-    res.cookie('refreshToken', '', {
-      domain: process.env.URL_COOKIE_DOMAIN,
-      sameSite: 'strict',
-      expires: new Date(0),
-    });
-
-    res.cookie('accessToken', '', {
-      domain: process.env.URL_COOKIE_DOMAIN,
-      sameSite: 'strict',
-      expires: new Date(0),
-    });
+    // Очистка кук (атрибуты должны совпадать с установленными)
+    res.cookie('refreshToken', '', {...baseCookieOptions, expires: new Date(0)});
+    res.cookie('accessToken', '', {...baseCookieOptions, expires: new Date(0)});
 
     return res.status(200).send();
   } catch (err) {
