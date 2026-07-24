@@ -283,3 +283,18 @@ UserCompanies.belongsTo(Users, {
   foreignKey: 'userId',
   as: 'user',
 });
+
+// Журнал событий для дашборда админки: регистрации, добавление авто,
+// создание/обновление компаний, обновление данных пользователя.
+// chatId — актор (мягкая ссылка, без FK, чтобы не ломаться при удалении).
+export const Events = sequelize.define('events', {
+  id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+  type: {type: DataTypes.STRING, allowNull: false},
+  chatId: {type: DataTypes.BIGINT, allowNull: true},
+  payload: {type: DataTypes.JSONB, allowNull: true},
+}, {
+  timestamps: true,
+  indexes: [
+    {fields: [{name: 'createdAt', order: 'DESC'}, {name: 'id', order: 'DESC'}]},
+  ],
+});

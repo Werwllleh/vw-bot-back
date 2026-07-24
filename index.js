@@ -13,6 +13,7 @@ import uploadRouter from './api/upload.js';
 import partnersRouter from './api/partners.js';
 import cmsRouter from "./api/cms.js";
 import protectRouter from './api/protect.js';
+import adminRouter from './api/admin.js';
 import {apiLimiter} from './functions/rateLimit.js';
 
 import logger from './functions/logger.js';
@@ -84,6 +85,9 @@ app.use("/api", partnersRouter);
 app.use("/api", cmsRouter);
 
 app.use('/api', authenticateAccessToken, protectRouter);
+
+// admin-роутер сам вешает authenticateAccessToken + requireRole на /admin/*
+app.use('/api', adminRouter);
 
 
 const start = async () => {

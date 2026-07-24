@@ -3,6 +3,7 @@ import logger from "../functions/logger.js";
 import {authenticateAccessToken} from "../services/auth.js";
 import {createUser, getUserInfo, userCarsData, updateUser} from "../services/users.js";
 import {validateData} from "./protect.js";
+import {logEvent, EVENT_TYPES} from "../services/events.js";
 
 const router = express.Router();
 
@@ -49,6 +50,7 @@ router.post("/create-user", authenticateAccessToken, async (req, res) => {
 
 
       if (Object.entries(resCreateUser).length) {
+        await logEvent(EVENT_TYPES.USER_REGISTERED, {chatId, payload: {name}});
         return res.status(200).json({
           message: 'Пользователь создан',
         });
@@ -135,6 +137,7 @@ router.post("/update-user", authenticateAccessToken, async (req, res) => {
     const resUpdateUser = await updateUser(chatId, payload);
 
     if (Object.entries(resUpdateUser).length) {
+      await logEvent(EVENT_TYPES.USER_UPDATED, {chatId, payload: {name}});
       return res.status(200).json({
         message: 'Данные обновлены',
       });

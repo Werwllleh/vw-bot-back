@@ -2,6 +2,7 @@ import express from "express";
 import {authenticateAccessToken, verifyToken} from "../services/auth.js";
 import {getUserInfo} from "../services/users.js";
 import {getUserCompanyInfo} from "../services/cms.js";
+import {getUserWithRoles} from "../services/roles.js";
 
 
 export const protectRouter = express.Router();
@@ -57,11 +58,14 @@ protectRouter.post('/protect/user', async (req, res) => {
     }
   }
 
+  const rolesInfo = await getUserWithRoles(hashData.chatId);
+
   res.status(200).json({
     user: {
       data: userData,
       userPhoto: hashData.photo,
-      companies: userCompanies || []
+      companies: userCompanies || [],
+      roles: rolesInfo?.roles || []
     }
   });
 });

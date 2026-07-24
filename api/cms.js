@@ -5,6 +5,7 @@ import {UserCompanies, Users} from "../models.js";
 import axios from "axios";
 import {CMS_API} from "../utils/consts.js";
 import {cleanPhone} from "../utils/utils.js";
+import {logEvent, EVENT_TYPES} from "../services/events.js";
 
 
 const cmsRouter = express.Router();
@@ -153,6 +154,11 @@ cmsRouter.post(
       const userCompany = await UserCompanies.create({
         userId: user.id,
         companyId: createdCompany.id,
+      });
+
+      await logEvent(EVENT_TYPES.PARTNER_CREATED, {
+        chatId,
+        payload: {companyId: createdCompany.id, title: title.trim()},
       });
 
       return res.status(201).json({
@@ -589,6 +595,11 @@ cmsRouter.patch(
        *
        * Связь пользователя с компанией уже существует.
        */
+      await logEvent(EVENT_TYPES.COMPANY_UPDATED, {
+        chatId,
+        payload: {companyId, title: title.trim()},
+      });
+
       return res.status(200).json({
         message: 'Компания успешно обновлена',
         company: updatedCompany,

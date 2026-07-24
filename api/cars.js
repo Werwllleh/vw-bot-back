@@ -9,6 +9,7 @@ import {authenticateAccessToken} from "../services/auth.js";
 import {validateData} from "./protect.js";
 import {addUserCar, getUserCar, otherCars, updateUserCar} from "../services/cars.js";
 import {Cars, CarsImages} from "../models.js";
+import {logEvent, EVENT_TYPES} from "../services/events.js";
 
 const adminId = process.env.ADMIN;
 
@@ -31,6 +32,10 @@ router.post("/add-car", authenticateAccessToken, async (req, res) => {
 
       if (!checkCarData) {
         const data = await addUserCar(chatId, carInfo);
+        await logEvent(EVENT_TYPES.CAR_ADDED, {
+          chatId,
+          payload: {brand: carInfo.brand, model: carInfo.model, number: carInfo.number},
+        });
         return res.status(200).json({
           carId: data.id
         });

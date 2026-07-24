@@ -34,6 +34,17 @@ export const createCmsPartner = async (data) => {
   return result?.doc ?? result;
 };
 
+// Общее количество партнёров (компаний) в CMS — для статистики админки.
+export const getPartnersCount = async () => {
+  try {
+    const response = await axios.get(`${CMS_API}/api/partner/c`, {params: {page: 1, limit: 1}});
+    return Number(response?.data?.totalCount) || 0;
+  } catch (error) {
+    console.error('Ошибка получения количества партнёров из CMS:', error.message);
+    return 0;
+  }
+};
+
 export const getUserCompanyInfo = async (id) => {
   try {
     const response = await axios.get(`${CMS_API}/api/partner/${id}`);
