@@ -9,51 +9,71 @@ export const MODELS = {
   VOLKSWAGEN: [
     {
       value: 'amarok',
-      label: 'amarok',
+      label: 'Amarok',
     },
     {
       value: 'arteon',
-      label: 'arteon',
+      label: 'Arteon',
     },
     {
       value: 'atlas',
-      label: 'atlas',
+      label: 'Atlas',
     },
     {
       value: 'atlas cross sport',
-      label: 'atlas cross sport',
+      label: 'Atlas Cross Sport',
     },
     {
       value: 'beetle',
-      label: 'beetle',
+      label: 'Beetle',
     },
     {
       value: 'bora',
-      label: 'bora',
+      label: 'Bora',
     },
     {
       value: 'caddy',
-      label: 'caddy',
+      label: 'Caddy',
     },
     {
       value: 'caravelle',
-      label: 'caravelle',
+      label: 'Caravelle',
+    },
+    {
+      value: 'cc',
+      label: 'CC',
+    },
+    {
+      value: 'corrado',
+      label: 'Corrado',
+    },
+    {
+      value: 'eos',
+      label: 'Eos',
+    },
+    {
+      value: 'fox',
+      label: 'Fox',
     },
     {
       value: 'golf',
-      label: 'golf',
+      label: 'Golf',
     },
     {
       value: 'golf plus',
-      label: 'golf plus',
+      label: 'Golf Plus',
+    },
+    {
+      value: 'golf sportsvan',
+      label: 'Golf Sportsvan',
     },
     {
       value: 'golf GTI',
-      label: 'golf GTI',
+      label: 'Golf GTI',
     },
     {
       value: 'golf R',
-      label: 'golf R',
+      label: 'Golf R',
     },
     {
       value: 'ID.3',
@@ -76,148 +96,268 @@ export const MODELS = {
       label: 'ID.7',
     },
     {
+      value: 'ID. Buzz',
+      label: 'ID. Buzz',
+    },
+    {
       value: 'jetta',
-      label: 'jetta',
+      label: 'Jetta',
     },
     {
       value: 'jetta GLI',
-      label: 'jetta GLI',
+      label: 'Jetta GLI',
+    },
+    {
+      value: 'karmann ghia',
+      label: 'Karmann Ghia',
+    },
+    {
+      value: 'lupo',
+      label: 'Lupo',
     },
     {
       value: 'multivan',
-      label: 'multivan',
+      label: 'Multivan',
+    },
+    {
+      value: 'new beetle',
+      label: 'New Beetle',
     },
     {
       value: 'passat',
-      label: 'passat',
+      label: 'Passat',
     },
     {
       value: 'passat alltrack',
-      label: 'passat alltrack',
+      label: 'Passat Alltrack',
     },
     {
       value: 'passat CC',
-      label: 'passat CC',
+      label: 'Passat CC',
     },
     {
       value: 'phaeton',
-      label: 'phaeton',
+      label: 'Phaeton',
     },
     {
       value: 'polo',
-      label: 'polo',
+      label: 'Polo',
     },
     {
       value: 'cross polo',
-      label: 'cross polo',
+      label: 'Cross Polo',
+    },
+    {
+      value: 'polo GTI',
+      label: 'Polo GTI',
+    },
+    {
+      value: 'rabbit',
+      label: 'Rabbit',
+    },
+    {
+      value: 'routan',
+      label: 'Routan',
+    },
+    {
+      value: 'santana',
+      label: 'Santana',
     },
     {
       value: 'scirocco',
-      label: 'scirocco',
+      label: 'Scirocco',
     },
     {
       value: 'sharan',
-      label: 'sharan',
+      label: 'Sharan',
     },
     {
       value: 'taos',
-      label: 'taos',
+      label: 'Taos',
     },
     {
       value: 'teramont',
-      label: 'teramont',
+      label: 'Teramont',
     },
     {
       value: 'tiguan',
-      label: 'tiguan',
+      label: 'Tiguan',
     },
     {
       value: 'touareg',
-      label: 'touareg',
+      label: 'Touareg',
     },
     {
       value: 'touran',
-      label: 'touran',
+      label: 'Touran',
     },
     {
       value: 'transporter',
-      label: 'transporter',
+      label: 'Transporter',
+    },
+    {
+      value: 'type 2',
+      label: 'Type 2 (Bus)',
+    },
+    {
+      value: 'up!',
+      label: 'Up!',
+    },
+    {
+      value: 'vento',
+      label: 'Vento',
     },
   ],
   SKODA: [
     {
+      value: 'citigo',
+      label: 'Citigo',
+    },
+    {
       value: 'fabia',
-      label: 'fabia',
+      label: 'Fabia',
     },
     {
       value: 'fabia RS',
-      label: 'fabia RS',
+      label: 'Fabia RS',
+    },
+    {
+      value: 'favorit',
+      label: 'Favorit',
+    },
+    {
+      value: 'felicia',
+      label: 'Felicia',
     },
     {
       value: 'kamiq',
-      label: 'kamiq',
+      label: 'Kamiq',
     },
     {
       value: 'karoq',
-      label: 'karoq',
+      label: 'Karoq',
     },
     {
       value: 'kodiaq',
-      label: 'kodiaq',
+      label: 'Kodiaq',
     },
     {
       value: 'kodiaq RS',
-      label: 'kodiaq RS',
+      label: 'Kodiaq RS',
     },
     {
       value: 'octavia',
-      label: 'octavia',
+      label: 'Octavia',
     },
     {
       value: 'octavia RS',
-      label: 'octavia RS',
+      label: 'Octavia RS',
     },
     {
       value: 'rapid',
-      label: 'rapid',
+      label: 'Rapid',
     },
     {
       value: 'roomster',
-      label: 'roomster',
+      label: 'Roomster',
     },
     {
       value: 'scala',
-      label: 'scala',
+      label: 'Scala',
     },
     {
       value: 'superb',
-      label: 'superb',
+      label: 'Superb',
     },
     {
       value: 'yeti',
-      label: 'yeti',
+      label: 'Yeti',
+    },
+    {
+      value: 'enyaq',
+      label: 'Enyaq',
+    },
+    {
+      value: 'enyaq coupe',
+      label: 'Enyaq Coupé',
+    },
+    {
+      value: 'elroq',
+      label: 'Elroq',
+    },
+    {
+      value: 'epiq',
+      label: 'Epiq',
+    },
+    {
+      value: 'peaq',
+      label: 'Peaq',
+    },
+    {
+      value: 'kylaq',
+      label: 'Kylaq',
+    },
+    {
+      value: 'kushaq',
+      label: 'Kushaq',
+    },
+    {
+      value: 'slavia',
+      label: 'Slavia',
     },
   ],
   AUDI: [
     {
+      value: '50',
+      label: '50',
+    },
+    {
       value: '80',
       label: '80',
+    },
+    {
+      value: '90',
+      label: '90',
     },
     {
       value: '100',
       label: '100',
     },
     {
+      value: '200',
+      label: '200',
+    },
+    {
       value: 'A1',
       label: 'A1',
+    },
+    {
+      value: 'A2',
+      label: 'A2',
     },
     {
       value: 'A3',
       label: 'A3',
     },
     {
+      value: 'S3',
+      label: 'S3',
+    },
+    {
+      value: 'RS3',
+      label: 'RS3',
+    },
+    {
       value: 'A4',
       label: 'A4',
+    },
+    {
+      value: 'S4',
+      label: 'S4',
+    },
+    {
+      value: 'RS4',
+      label: 'RS4',
     },
     {
       value: 'A4 Allroad',
@@ -256,6 +396,10 @@ export const MODELS = {
       label: 'A7',
     },
     {
+      value: 'S7',
+      label: 'S7',
+    },
+    {
       value: 'RS7',
       label: 'RS7',
     },
@@ -272,12 +416,24 @@ export const MODELS = {
       label: 'e-tron',
     },
     {
+      value: 'e-tron GT',
+      label: 'e-tron GT',
+    },
+    {
+      value: 'Q2',
+      label: 'Q2',
+    },
+    {
       value: 'Q3',
       label: 'Q3',
     },
     {
       value: 'Q3 Sportback',
       label: 'Q3 Sportback',
+    },
+    {
+      value: 'Q4 e-tron',
+      label: 'Q4 e-tron',
     },
     {
       value: 'Q5',
@@ -300,8 +456,16 @@ export const MODELS = {
       label: 'Q6',
     },
     {
+      value: 'Q6 e-tron',
+      label: 'Q6 e-tron',
+    },
+    {
       value: 'Q7',
       label: 'Q7',
+    },
+    {
+      value: 'SQ7',
+      label: 'SQ7',
     },
     {
       value: 'Q8',
@@ -316,98 +480,338 @@ export const MODELS = {
       label: 'RS Q8',
     },
     {
+      value: 'Q9',
+      label: 'Q9',
+    },
+    {
       value: 'TT',
       label: 'TT',
+    },
+    {
+      value: 'TTS',
+      label: 'TTS',
+    },
+    {
+      value: 'TT RS',
+      label: 'TT RS',
     },
     {
       value: 'R8',
       label: 'R8',
     },
+    {
+      value: 'quattro',
+      label: 'Quattro',
+    },
+    {
+      value: 'coupe',
+      label: 'Coupé',
+    },
+    {
+      value: 'cabriolet',
+      label: 'Cabriolet',
+    },
+    {
+      value: 'allroad',
+      label: 'Allroad',
+    },
+    {
+      value: 'V8',
+      label: 'V8',
+    },
   ],
   SEAT: [
     {
+      value: '124',
+      label: '124',
+    },
+    {
+      value: '127',
+      label: '127',
+    },
+    {
+      value: '128',
+      label: '128',
+    },
+    {
+      value: '131',
+      label: '131',
+    },
+    {
+      value: '132',
+      label: '132',
+    },
+    {
+      value: '133',
+      label: '133',
+    },
+    {
       value: 'alhambra',
-      label: 'alhambra',
+      label: 'Alhambra',
     },
     {
       value: 'altea',
-      label: 'altea',
+      label: 'Altea',
     },
     {
       value: 'arosa',
-      label: 'arosa',
+      label: 'Arosa',
+    },
+    {
+      value: 'arona',
+      label: 'Arona',
     },
     {
       value: 'ateca',
-      label: 'ateca',
+      label: 'Ateca',
     },
     {
       value: 'cordoba',
-      label: 'cordoba',
+      label: 'Cordoba',
+    },
+    {
+      value: 'exeo',
+      label: 'Exeo',
+    },
+    {
+      value: 'fura',
+      label: 'Fura',
     },
     {
       value: 'ibiza',
-      label: 'ibiza',
+      label: 'Ibiza',
+    },
+    {
+      value: 'inca',
+      label: 'Inca',
     },
     {
       value: 'leon',
-      label: 'leon',
+      label: 'Leon',
     },
     {
       value: 'leon cupra',
-      label: 'leon cupra',
+      label: 'Leon Cupra',
+    },
+    {
+      value: 'malaga',
+      label: 'Malaga',
+    },
+    {
+      value: 'marbella',
+      label: 'Marbella',
+    },
+    {
+      value: 'mii',
+      label: 'Mii',
+    },
+    {
+      value: 'onda',
+      label: 'Onda',
+    },
+    {
+      value: 'ritmo',
+      label: 'Ritmo',
     },
     {
       value: 'tarraco',
-      label: 'tarraco',
+      label: 'Tarraco',
     },
     {
       value: 'toledo',
-      label: 'toledo',
-    }
+      label: 'Toledo',
+    },
   ],
   BENTLEY: [
     {
+      value: '3 litre',
+      label: '3 Litre',
+    },
+    {
+      value: '3.5 litre',
+      label: '3.5 Litre',
+    },
+    {
+      value: '4 litre',
+      label: '4 Litre',
+    },
+    {
+      value: '4.5 litre',
+      label: '4½ Litre',
+    },
+    {
+      value: '6.5 litre',
+      label: '6½ Litre',
+    },
+    {
+      value: '8 litre',
+      label: '8 Litre',
+    },
+    {
+      value: 'arnage',
+      label: 'Arnage',
+    },
+    {
+      value: 'azure',
+      label: 'Azure',
+    },
+    {
       value: 'bentayga',
-      label: 'bentayga',
+      label: 'Bentayga',
     },
     {
-      value: 'flying Spur',
-      label: 'flying Spur',
+      value: 'bentayga hybrid',
+      label: 'Bentayga Hybrid',
     },
     {
-      value: 'continental Flying Spur',
-      label: 'continental Flying Spur',
+      value: 'bentayga extended wheelbase',
+      label: 'Bentayga Extended Wheelbase',
+    },
+    {
+      value: 'brooklands',
+      label: 'Brooklands',
+    },
+    {
+      value: 'continental',
+      label: 'Continental',
     },
     {
       value: 'continental GT',
-      label: 'continental GT',
+      label: 'Continental GT',
+    },
+    {
+      value: 'continental GTC',
+      label: 'Continental GTC',
+    },
+    {
+      value: 'continental R',
+      label: 'Continental R',
+    },
+    {
+      value: 'continental T',
+      label: 'Continental T',
+    },
+    {
+      value: 'corniche',
+      label: 'Corniche',
+    },
+    {
+      value: 'eight',
+      label: 'Eight',
+    },
+    {
+      value: 'flying spur',
+      label: 'Flying Spur',
+    },
+    {
+      value: 'mark VI',
+      label: 'Mark VI',
     },
     {
       value: 'mulsanne',
-      label: 'mulsanne',
-    }
+      label: 'Mulsanne',
+    },
+    {
+      value: 'R type',
+      label: 'R Type',
+    },
+    {
+      value: 'S1',
+      label: 'S1',
+    },
+    {
+      value: 'S2',
+      label: 'S2',
+    },
+    {
+      value: 'S3',
+      label: 'S3',
+    },
+    {
+      value: 'speed six',
+      label: 'Speed Six',
+    },
+    {
+      value: 'turbo R',
+      label: 'Turbo R',
+    },
   ],
   LAMBORGHINI: [
     {
+      value: '350 GT',
+      label: '350 GT',
+    },
+    {
+      value: '400 GT',
+      label: '400 GT',
+    },
+    {
       value: 'aventador',
-      label: 'aventador',
+      label: 'Aventador',
+    },
+    {
+      value: 'countach',
+      label: 'Countach',
+    },
+    {
+      value: 'diablo',
+      label: 'Diablo',
+    },
+    {
+      value: 'espada',
+      label: 'Espada',
     },
     {
       value: 'gallardo',
-      label: 'gallardo',
+      label: 'Gallardo',
     },
     {
       value: 'huracan',
-      label: 'huracan',
+      label: 'Huracan',
+    },
+    {
+      value: 'islero',
+      label: 'Islero',
+    },
+    {
+      value: 'jarama',
+      label: 'Jarama',
+    },
+    {
+      value: 'LM002',
+      label: 'LM002',
+    },
+    {
+      value: 'miura',
+      label: 'Miura',
     },
     {
       value: 'murcielago',
-      label: 'murcielago',
+      label: 'Murcielago',
+    },
+    {
+      value: 'revuelto',
+      label: 'Revuelto',
+    },
+    {
+      value: 'reventon',
+      label: 'Reventón',
+    },
+    {
+      value: 'sian',
+      label: 'Sián',
+    },
+    {
+      value: 'temerario',
+      label: 'Temerario',
     },
     {
       value: 'urus',
-      label: 'urus',
+      label: 'Urus',
+    },
+    {
+      value: 'urus SE',
+      label: 'Urus SE',
     },
   ]
 }
