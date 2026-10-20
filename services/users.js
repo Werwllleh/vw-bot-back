@@ -54,7 +54,11 @@ export const getUserInfo = async (chatId) => {
       return null; // Если пользователь не найден, возвращаем null
     }
 
-    return userData;
+    const userJson = userData.toJSON();
+    userJson.hasPassword = !!userJson.password;
+    delete userJson.password;
+
+    return userJson;
   } catch (err) {
     console.error('Ошибка при получении инфо пользователя', err);
   }

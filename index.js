@@ -32,7 +32,9 @@ const app = express();
 app.set('trust proxy', 1);
 
 // const bot = new Bot(token);
-export const bot = new TelegramBot(token, {polling: true});
+// Отключаем polling: бот используется только для отправки сообщений (sendMessage),
+// а авторизация Telegram происходит на клиенте через Telegram Login Widget.
+export const bot = new TelegramBot(token, {polling: false});
 
 const allowedOrigins = [
     process.env.URL_TEST,
@@ -42,7 +44,7 @@ const allowedOrigins = [
     process.env.URL_CMS,
 ].filter(Boolean);
 
-app.use(cors({
+/*app.use(cors({
     origin: function (origin, callback) {
         if (!origin) return callback(null, true);
 
@@ -54,9 +56,9 @@ app.use(cors({
         }
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
+    methods: ['GET', 'POST', 'OPTIONS', 'PATCH', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Access-Control-Allow-Origin']
+}));*/
 
 app.use(cookieParser());
 app.use(express.json());

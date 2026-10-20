@@ -79,7 +79,13 @@ router.post("/update-car", authenticateAccessToken, async (req, res) => {
     try {
       const checkCarData = await getUserCar(null, carId);
 
-      if (String(chatId) !== checkCarData.chatId) {
+      if (!checkCarData) {
+        return res.status(404).json({
+          message: "Авто не найдено",
+        });
+      }
+
+      if (String(chatId) !== String(checkCarData.chatId) && String(process.env.ADMIN) !== String(chatId)) {
         return res.status(403).json({
           message: "Нет доступа",
         });
@@ -129,7 +135,7 @@ router.post("/delete-car", authenticateAccessToken, async (req, res) => {
         });
       }
 
-      if (String(chatId) !== carData.chatId) {
+      if (String(chatId) !== String(carData.chatId) && String(process.env.ADMIN) !== String(chatId)) {
         return res.status(403).json({
           message: "Нет доступа",
         });
@@ -137,7 +143,7 @@ router.post("/delete-car", authenticateAccessToken, async (req, res) => {
 
       if (carData.carsImages.length) {
         for (const img of carData.carsImages) {
-          const imgPath = path.resolve("upload/image", img.source);
+          const imgPath = path.join(process.env.IMAGES_DIR, img.source);
 
           if (fs.existsSync(imgPath)) {
             try {

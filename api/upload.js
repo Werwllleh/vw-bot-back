@@ -26,7 +26,9 @@ router.post("/upload", authenticateAccessToken, async (req, res) => {
 
     const carId = req.body.carId;
 
-    if (!req.files) return;
+    if (!req.files || !Object.keys(req.files).length) {
+      return res.status(400).json({ message: "Файлы не переданы" });
+    }
 
     const files = Object.values(req.files)[0];
     // Обработка: если массив — несколько файлов, если нет — один
@@ -40,9 +42,12 @@ router.post("/upload", authenticateAccessToken, async (req, res) => {
     );
 
     if (uploadCategory === 'car' && carId) {
-      results?.map(car => {
-        addCarImage(carId, car.filename)
-      })
+      const car = await Cars.findOne({ where: { id: carId } });
+      if (car && (String(car.chatId) === String(chatId) || String(process.env.ADMIN) === String(chatId))) {
+        await Promise.all(
+          results.filter(carImg => carImg?.filename).map(carImg => addCarImage(carId, carImg.filename))
+        );
+      }
     }
 
     return res.status(200).json({
@@ -81,32 +86,38 @@ router.post("/remove", authenticateAccessToken, async (req, res) => {
 
 
     if (removeType === 'car') {
+      const carImage = await CarsImages.findOne({
+        where: { source: filename },
+        include: [{ model: Cars, required: false }]
+      });
+
+      if (!carImage) {
+        return res.status(404).json({ message: "Файл не найден" });
+      }
+
+      // Проверка прав: только владелец автомобиля или администратор
+      const isOwner = carImage.car && String(carImage.car.chatId) === String(chatId);
+      const isAdmin = String(process.env.ADMIN) === String(chatId);
+
+      if (!isOwner && !isAdmin) {
+        return res.status(403).json({ message: "Нет доступа для удаления этого файла" });
+      }
 
       const folder = process.env.IMAGES_DIR;
-
-      const fileRemoved = removeFile(filename, folder);
-
-      /*if (!fileRemoved) {
-        return res.status(500).json({
-          message: "Ошибка при удалении файла",
-        });
-      }*/
+      removeFile(filename, folder);
 
       await CarsImages.destroy({
-        where: { source: filename },
+        where: { id: carImage.id },
       });
 
       return res.status(200).json({
         message: "Файл удален",
-        /*file: filename,
-        dbRecordsDeleted: deleted,
-        fileRemoved,*/
       });
     }
 
     return res.status(200).json({
       message: "Удалено",
-      fileName
+      filename
     });
 
 

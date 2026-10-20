@@ -15,19 +15,26 @@ protectRouter.use('/protect', (req, res, next) => {
 
 
 export const validateData = async (req, res) => {
-  const accessToken = req.cookies.accessToken;
+  const accessToken = req.cookies?.accessToken;
 
   if (!accessToken) {
-    return res.status(401).json({error: 'jwt expired'});
+    if (!res.headersSent) res.status(401).json({error: 'jwt expired'});
+    return null;
   }
 
-  const decoded = await verifyToken(accessToken);
-
-  if (!decoded) {
-    return res.status(401).json({error: 'jwt invalid'});
+  try {
+    const decoded = await verifyToken(accessToken);
+    return decoded;
+  } catch (err) {
+    if (!res.headersSent) {
+      if (err.name === 'TokenExpiredError' || err.code === 'ERR_JWT_EXPIRED') {
+        res.status(401).json({error: 'jwt expired'});
+      } else {
+        res.status(401).json({error: 'jwt invalid'});
+      }
+    }
+    return null;
   }
-
-  return decoded;
 }
 
 
@@ -36,6 +43,7 @@ protectRouter.use('/protect', authenticateAccessToken);
 protectRouter.post('/protect/user', async (req, res) => {
 
   const hashData = await validateData(req, res);
+  if (!hashData) return;
 
   const userData = await getUserInfo(hashData.chatId);
 

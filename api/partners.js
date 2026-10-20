@@ -1,7 +1,5 @@
 import express from "express";
-import {
-
-} from "../db/partners-methods.js";
+import {authenticateAccessToken} from "../services/auth.js";
 import {validateData} from "./protect.js";
 import {translite} from "../functions/translite.js";
 import {Partners} from "../models.js";
@@ -27,16 +25,21 @@ router.get('/company/:id/attached', async (req, res) => {
 });
 
 //добавление партнера
-router.post('/partners', async (req, res) => {
-
+router.post('/partners', authenticateAccessToken, async (req, res) => {
   const hashData = await validateData(req, res);
 
   const partnerData = req.body;
-  const chatId = hashData.chatId;
+  const chatId = hashData?.chatId;
 
   if (!chatId) {
     return res.status(403).json({
       message: 'Неавторизованный пользователь',
+    });
+  }
+
+  if (!partnerData?.title?.trim()) {
+    return res.status(400).json({
+      message: 'Название компании обязательно',
     });
   }
 
@@ -47,10 +50,10 @@ router.post('/partners', async (req, res) => {
     phones: partnerData.phones,
     site: partnerData?.site?.trim() || "",
     instagram: partnerData?.instagram?.trim() || "",
-    telegram: partnerData?.instagram?.trim() || "",
-    whatsapp: partnerData?.instagram?.trim() || "",
-    max: partnerData?.instagram?.trim() || "",
-    vk: partnerData?.instagram?.trim() || "",
+    telegram: partnerData?.telegram?.trim() || "",
+    whatsapp: partnerData?.whatsapp?.trim() || "",
+    max: partnerData?.max?.trim() || "",
+    vk: partnerData?.vk?.trim() || "",
     yandex_profile: partnerData?.yandex_profile?.trim() || "",
     address: partnerData?.address?.trim() || "",
     coordinates: partnerData?.coordinates?.trim() || "",

@@ -3,7 +3,9 @@ import {DataTypes} from 'sequelize';
 
 export const Users = sequelize.define('users', {
   id: {type: DataTypes.INTEGER, primaryKey: true, unique: true, autoIncrement: true},
-  chatId: {type: DataTypes.BIGINT, unique: true},
+  chatId: {type: DataTypes.BIGINT, unique: true, allowNull: true},
+  email: {type: DataTypes.STRING, unique: true, allowNull: true},
+  password: {type: DataTypes.STRING, allowNull: true},
   name: {type: DataTypes.STRING, allowNull: false},
   instagram: {type: DataTypes.STRING},
   color: {type: DataTypes.STRING, allowNull: false},

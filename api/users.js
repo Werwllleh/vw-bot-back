@@ -16,8 +16,8 @@ router.post("/create-user", authenticateAccessToken, async (req, res) => {
     const userData = req.body.data;
 
     const chatId = hashData.chatId;
-    const name = userData.name.trim();
-    const instagram = userData?.instagram.trim() || null;
+    const name = userData?.name?.trim();
+    const instagram = userData?.instagram?.trim() || null;
 
     if (!chatId) {
       return res.status(500).json({
@@ -106,8 +106,8 @@ router.post("/update-user", authenticateAccessToken, async (req, res) => {
     const userData = req.body.data;
 
     const chatId = hashData.chatId;
-    const name = userData.name.trim();
-    const instagram = userData?.instagram.trim() || null;
+    const name = userData?.name?.trim();
+    const instagram = userData?.instagram?.trim() || null;
 
     if (!chatId) {
       return res.status(500).json({
