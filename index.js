@@ -35,6 +35,9 @@ app.set('trust proxy', 1);
 // Отключаем polling: бот используется только для отправки сообщений (sendMessage),
 // а авторизация Telegram происходит на клиенте через Telegram Login Widget.
 export const bot = new TelegramBot(token, {polling: false});
+export const authBot = process.env.BOT_AUTH_TOKEN
+  ? new TelegramBot(process.env.BOT_AUTH_TOKEN, {polling: false})
+  : bot;
 
 const allowedOrigins = [
     process.env.URL_TEST,

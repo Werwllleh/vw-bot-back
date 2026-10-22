@@ -1,13 +1,16 @@
 import express from "express";
+import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
+import {Op} from "sequelize";
 import {AuthDataValidator} from "@telegram-auth/server";
 import {objectToAuthDataMap} from "@telegram-auth/server/utils";
 import {authenticateAccessToken, generateAccessToken, generateRefreshToken, verifyToken} from "../services/auth.js" ;
 import {authLimiter} from "../functions/rateLimit.js";
-import {Users, Roles, UserRoles} from "../models.js";
+import {Users, Roles, UserRoles, PasswordResetTokens} from "../models.js";
 import {ROLES} from "../services/roles.js";
 import {randomColor} from "../functions/randomColor.js";
 import {logEvent, EVENT_TYPES} from "../services/events.js";
+import {sendPasswordResetEmail, isEmailConfigured} from "../services/email.js";
 
 
 const router = express.Router();
@@ -324,5 +327,169 @@ router.post('/auth/logout', async (req, res) => {
   }
 });
 
+// Запрос на сброс пароля (по Email)
+router.post('/auth/forgot-password', authLimiter, async (req, res) => {
+  try {
+    const { email } = req.body || {};
+    const normalizedEmail = email?.trim()?.toLowerCase();
+
+    if (!normalizedEmail) {
+      return res.status(400).json({ error: 'Укажите адрес электронной почты' });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(normalizedEmail)) {
+      return res.status(400).json({ error: 'Некорректный адрес электронной почты' });
+    }
+
+    const genericResponse = {
+      message: 'Если указанный email зарегистрирован, ссылка для сброса пароля будет отправлена в течение нескольких минут.'
+    };
+
+    const user = await Users.findOne({ where: { email: normalizedEmail } });
+    if (!user) {
+      // Защита от перебора email: одинаковый ответ
+      return res.status(200).json(genericResponse);
+    }
+
+    if (user.banned) {
+      return res.status(403).json({ error: 'Пользователь заблокирован', reason: user.banReason });
+    }
+
+    // Аннулируем все предыдущие активные токены сброса
+    await PasswordResetTokens.update(
+      { used: true },
+      { where: { userId: user.id, used: false } }
+    );
+
+    // Генерируем новый токен
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 час
+
+    await PasswordResetTokens.create({
+      userId: user.id,
+      token,
+      expiresAt,
+      used: false,
+    });
+
+    const frontUrl = process.env.URL_FRONT || 'https://vagclub21.ru';
+    const resetUrl = `${frontUrl}/reset-password?token=${token}`;
+
+    let deliveredVia = [];
+
+    // 1. Отправка через Telegram бота авторизации VW21AuthBot (если привязан реальный аккаунт TG)
+    const hasTelegram = user.chatId && Number(user.chatId) > 0;
+    if (hasTelegram) {
+      try {
+        const { authBot, bot } = await import("../index.js");
+        const targetBot = authBot || bot;
+        const message = `🔑 <b>Сброс пароля на VAGClub21</b>\n\nЗдравствуйте, <b>${user.name || 'пользователь'}</b>!\nВы запросили сброс пароля для входа по email: <code>${user.email}</code>.\n\nДля создания нового пароля перейдите по ссылке:\n👉 <a href="${resetUrl}"><b>Сбросить пароль</b></a>\n\n⏳ <i>Ссылка действительна 1 час. Если это были не вы, просто проигнорируйте данное сообщение.</i>`;
+        await targetBot.sendMessage(user.chatId, message, {
+          parse_mode: 'HTML',
+          disable_web_page_preview: true,
+        });
+        deliveredVia.push('telegram-authbot');
+      } catch (tgErr) {
+        console.error('[auth] Ошибка отправки ссылки через VW21AuthBot:', tgErr?.message);
+        // Резервная попытка через основного бота
+        try {
+          const { bot } = await import("../index.js");
+          if (bot) {
+            await bot.sendMessage(user.chatId, message, {
+              parse_mode: 'HTML',
+              disable_web_page_preview: true,
+            });
+            deliveredVia.push('telegram-mainbot');
+          }
+        } catch (fallbackErr) {
+          console.error('[auth] Ошибка отправки ссылки в Telegram:', fallbackErr?.message);
+        }
+      }
+    }
+
+    // 2. Отправка через Email (если SMTP настроен)
+    if (isEmailConfigured()) {
+      try {
+        await sendPasswordResetEmail({
+          to: user.email,
+          resetUrl,
+          userName: user.name,
+        });
+        deliveredVia.push('email');
+      } catch (mailErr) {
+        console.error('[auth] Ошибка отправки email для сброса пароля:', mailErr?.message);
+      }
+    } else {
+      console.warn(`[auth] SMTP не настроен. Токен для ${user.email} сгенерирован (resetUrl: ${resetUrl})`);
+    }
+
+    await logEvent(EVENT_TYPES.USER_UPDATED, {
+      chatId: user.chatId,
+      payload: { action: 'forgot_password_requested', deliveredVia },
+    });
+
+    return res.status(200).json(genericResponse);
+  } catch (err) {
+    console.error('Error during forgot-password:', err);
+    return res.status(500).json({ error: 'Ошибка при отправке ссылки для сброса пароля' });
+  }
+});
+
+// Установка нового пароля по токену
+router.post('/auth/reset-password', authLimiter, async (req, res) => {
+  try {
+    const { token, password } = req.body || {};
+
+    if (!token || typeof token !== 'string') {
+      return res.status(400).json({ error: 'Токен сброса пароля не передан' });
+    }
+
+    if (!password || password.length < 6) {
+      return res.status(400).json({ error: 'Пароль должен быть не менее 6 символов' });
+    }
+
+    const resetToken = await PasswordResetTokens.findOne({
+      where: {
+        token,
+        used: false,
+        expiresAt: { [Op.gt]: new Date() },
+      },
+      include: [
+        {
+          model: Users,
+          as: 'user',
+        },
+      ],
+    });
+
+    if (!resetToken || !resetToken.user) {
+      return res.status(400).json({
+        error: 'Ссылка для сброса пароля недействительна или срок её действия истёк'
+      });
+    }
+
+    const user = resetToken.user;
+    if (user.banned) {
+      return res.status(403).json({ error: 'Пользователь заблокирован', reason: user.banReason });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    await user.update({ password: passwordHash });
+    await resetToken.update({ used: true });
+
+    await logEvent(EVENT_TYPES.USER_UPDATED, {
+      chatId: user.chatId,
+      payload: { action: 'password_reset_completed' },
+    });
+
+    return res.status(200).json({
+      message: 'Пароль успешно обновлён! Теперь вы можете войти с новым паролем.'
+    });
+  } catch (err) {
+    console.error('Error during reset-password:', err);
+    return res.status(500).json({ error: 'Ошибка при установке нового пароля' });
+  }
+});
 
 export default router;

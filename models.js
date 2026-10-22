@@ -300,3 +300,32 @@ export const Events = sequelize.define('events', {
     {fields: [{name: 'createdAt', order: 'DESC'}, {name: 'id', order: 'DESC'}]},
   ],
 });
+
+export const PasswordResetTokens = sequelize.define('passwordResetTokens', {
+  id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Users,
+      key: 'id'
+    }
+  },
+  token: {type: DataTypes.STRING(64), allowNull: false, unique: true},
+  expiresAt: {type: DataTypes.DATE, allowNull: false},
+  used: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+}, {
+  tableName: 'passwordResetTokens',
+  timestamps: true
+});
+
+Users.hasMany(PasswordResetTokens, {
+  foreignKey: 'userId',
+  as: 'resetTokens',
+  onDelete: 'CASCADE',
+});
+
+PasswordResetTokens.belongsTo(Users, {
+  foreignKey: 'userId',
+  as: 'user',
+});
